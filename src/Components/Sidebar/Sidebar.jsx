@@ -48,10 +48,10 @@ const LinkItems = [
   { name: 'Home', icon: FaHome,url: '/dashboard/home'  },
   { name: 'Courses', icon: BsFillPlayCircleFill,url: '/dashboard/courses' },
   { name: 'Tiers', icon: FaDollarSign,url: '/dashboard' },
-  { name: 'Chat', icon: BsFillChatTextFill,url: '/dashboard' },
+  { name: 'Chat', icon: BsFillChatTextFill,url: '/dashboard/chatsScreen' },
   { name: 'Wallet', icon: BsWallet,url: '/dashboard' },
   { name: 'Users', icon: FaUserCheck,url: '/dashboard/user' },
-  { name: 'Settings', icon: FiSettings,url: '/dashboard' },
+  { name: 'Settings', icon: FiSettings,url: '/dashboard/settingsscreen' },
 ];
 
 export default function SidebarWithHeader({ children }) {
