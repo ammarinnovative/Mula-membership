@@ -1,10 +1,8 @@
 import Logo from "../../Assets/Images/Logo.png"
-import { FaHome,FaUserCheck,FaDollarSign } from "react-icons/fa";
-import React, { ReactNode } from 'react';
-import { Link as ReactLink  } from "react-router-dom";
-
-
-
+import { FaHome, FaUserCheck, FaDollarSign } from "react-icons/fa";
+import React, { ReactNode, useEffect, useState } from 'react';
+import { Link as ReactLink, useLocation } from "react-router-dom";
+import { SearchIcon } from '@chakra-ui/icons'
 import {
   IconButton,
   Avatar,
@@ -27,7 +25,10 @@ import {
   MenuButton,
   MenuDivider,
   MenuItem,
+  InputLeftElement,
   MenuList,
+  InputGroup,
+  Input,
 } from '@chakra-ui/react';
 import {
   FiHome,
@@ -42,20 +43,34 @@ import {
 } from 'react-icons/fi';
 import { IconType } from 'react-icons';
 import { ReactText } from 'react';
-import { BsWallet,BsFillChatTextFill ,BsFillPlayCircleFill} from "react-icons/bs";
+import { BsWallet, BsFillChatTextFill, BsFillPlayCircleFill } from "react-icons/bs";
 
 const LinkItems = [
-  { name: 'Home', icon: FaHome,url: '/dashboard/home'  },
-  { name: 'Courses', icon: BsFillPlayCircleFill,url: '/dashboard/courses' },
-  { name: 'Tiers', icon: FaDollarSign,url: '/dashboard' },
-  { name: 'Chat', icon: BsFillChatTextFill,url: '/dashboard' },
-  { name: 'Wallet', icon: BsWallet,url: '/dashboard' },
-  { name: 'Users', icon: FaUserCheck,url: '/dashboard/user' },
-  { name: 'Settings', icon: FiSettings,url: '/dashboard' },
+  { name: 'Home', icon: FaHome, url: '/' },
+  { name: 'Courses', icon: BsFillPlayCircleFill, url: '/dashboard/Courses' },
+  { name: 'Tiers', icon: FaDollarSign, url: '/dashboard/Tiers' },
+  { name: 'Chat', icon: BsFillChatTextFill, url: '/dashboard' },
+  { name: 'Users', icon: FaUserCheck, url: '/dashboard/User' },
+  { name: 'Settings', icon: FiSettings, url: '/dashboard/Setting' },
 ];
 
 export default function SidebarWithHeader({ children }) {
+
+  const location = useLocation();
+  const [curLoc, setCurLoc] = useState('Overview');
+
+  useEffect(() => {
+    let tempLoc = String(location.pathname).split('/')[2];
+    if (tempLoc !== '' || tempLoc !== undefined || tempLoc !== null) {
+      setCurLoc(tempLoc);
+    } else {
+      setCurLoc('Overview');
+    }
+  }, [location])
+
   const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const [same,setSame] = useState("true");
   return (
     <Box minH="100vh" bg={useColorModeValue('gray.100', 'gray.900')}>
       <SidebarContent
@@ -74,8 +89,8 @@ export default function SidebarWithHeader({ children }) {
           <SidebarContent onClose={onClose} />
         </DrawerContent>
       </Drawer>
-  
-      <MobileNav onOpen={onOpen} />
+
+      <MobileNav onOpen={onOpen} tarLoc={curLoc} />
       <Box ml={{ base: 0, md: 60 }} p="4">
         {children}
       </Box>
@@ -83,7 +98,12 @@ export default function SidebarWithHeader({ children }) {
   );
 }
 
-const SidebarContent = ({ onClose, ...rest }) => {
+const SidebarContent = ({ onClose, ...rest}) => {
+
+
+  const location = useLocation();
+  console.log(location.pathname,"======>",LinkItems);
+
   return (
     <Box
       transition="3s ease"
@@ -93,9 +113,9 @@ const SidebarContent = ({ onClose, ...rest }) => {
       w={{ base: 'full', md: 60 }}
       pos="fixed"
       h="full"
-      color={"gray.200"}
+      // color="red" 
       paddingTop={"22px"}
-      paddingRight={"17px"}
+
       {...rest}>
       <Flex h="20" alignItems="center" mx="8" justifyContent="space-between">
         <Text fontSize="2xl" fontFamily="monospace" fontWeight="bold">
@@ -103,13 +123,13 @@ const SidebarContent = ({ onClose, ...rest }) => {
         </Text>
         <CloseButton display={{ base: 'flex', md: 'none' }} onClick={onClose} />
       </Flex>
-      <Box mt={"40px"} >
+      <Box mt={"40px"}  >
         {LinkItems.map((link) => (
-        <Link as={ReactLink} to={link.url}>
-         <NavItem width={"100%"}   key={link.name} color={"gray.12"} icon={link.icon}>
-            {link.name}
-          </NavItem>
-        </Link>
+          <Link as={ReactLink} backgroundColor={"#fff"} to={link.url}>
+            <NavItem url={link?.url} width={"100%"} marginLeft={"0"} borderRadius={"0"} key={link.name} color={"gray.12"} icon={link.icon}>
+              {link.name}
+            </NavItem>
+          </Link>
         ))}
       </Box>
     </Box>
@@ -117,9 +137,12 @@ const SidebarContent = ({ onClose, ...rest }) => {
 };
 
 
-const NavItem = ({ icon, children, ...rest }) => {
+const NavItem = ({ icon, url, children, ...rest }) => {
+
+  const location = useLocation();
+  console.log(url, '---' ,location.pathname);
   return (
-    <Link href="#" style={{ textDecoration: 'none' }} _focus={{ boxShadow: 'none' }}>
+    <Link color={url===location.pathname?"#2c339e":"#fff"} href="#" style={{ textDecoration: 'none' }} _focus={{ boxShadow: 'none' }}>
       <Flex
         align="center"
         p="4"
@@ -127,18 +150,12 @@ const NavItem = ({ icon, children, ...rest }) => {
         borderRadius="lg"
         role="group"
         cursor="pointer"
-        _hover={{
-          bg: 'cyan.400',
-          color: 'white',
-        }}
+        bg={url === location.pathname ? '#fff' : 'transparent'}
         {...rest}>
         {icon && (
           <Icon
             mr="4"
             fontSize="16"
-            _groupHover={{
-              color: 'white',
-            }}
             as={icon}
           />
         )}
@@ -149,7 +166,7 @@ const NavItem = ({ icon, children, ...rest }) => {
 };
 
 
-const MobileNav = ({ onOpen, ...rest }) => {
+const MobileNav = ({ onOpen, tarLoc, ...rest }) => {
   return (
     <Flex
       ml={{ base: 0, md: 60 }}
@@ -160,8 +177,11 @@ const MobileNav = ({ onOpen, ...rest }) => {
       bg={useColorModeValue('white', 'gray.900')}
       borderBottomWidth="1px"
       borderBottomColor={useColorModeValue('gray.200', 'gray.700')}
-      justifyContent={{ base: 'space-between', md: 'flex-end' }}
+      justifyContent={{ base: 'space-between', md: 'space-between' }}
       {...rest}>
+      <Box>
+        <Text display={{ base: "none", md: "block" }} fontWeigh={"bold"} fontSize={"27px"} color={"black"}>{tarLoc ?? 'Overview'}</Text>
+      </Box>
       <IconButton
         display={{ base: 'flex', md: 'none' }}
         onClick={onOpen}
@@ -169,7 +189,7 @@ const MobileNav = ({ onOpen, ...rest }) => {
         aria-label="open menu"
         icon={<FiMenu />}
       />
-      <Text color={"red"}>Text</Text>
+
 
       <Text
         display={{ base: 'flex', md: 'none' }}
@@ -180,6 +200,11 @@ const MobileNav = ({ onOpen, ...rest }) => {
       </Text>
 
       <HStack spacing={{ base: '0', md: '6' }}>
+        <InputGroup>
+          <InputLeftElement pointerEvents='none'
+            children={<SearchIcon color='gray.300' />} />
+          <Input placeholder="Search something" />
+        </InputGroup>
         <IconButton
           size="lg"
           variant="ghost"
@@ -204,7 +229,6 @@ const MobileNav = ({ onOpen, ...rest }) => {
                   alignItems="flex-start"
                   spacing="1px"
                   ml="2">
-                  <Text fontSize="sm">Justina Clark</Text>
                   <Text fontSize="xs" color="gray.600">
                     Admin
                   </Text>
