@@ -14,9 +14,13 @@ export const Courses = () => {
         <Box>
             <Sidebar>
                 <Box>
-                    <Flex justifyContent={"space-between"} alignItems={"center"}>
-                        <Text fontSize={"22px"} fontFamily={"AvenirLT"} fontWeight={"bold"}>3 Crypto courses</Text>
-                        <Button color={"#000000"} outline={"none"} fontSize={"16px"} size={"md"} border={"1px solid #000000"} backgroundColor={"#ffffff"} >
+                    <Box>
+                        <Button backgroundColor={"#1e2598"} margin={"10px 0"} width={{base:"100%",md:"40%",lg:"25%"}} _hover={"none"} marginRight="10px" px={"40px"} color="white" >Courses</Button>
+                        <Button backgroundColor={"#1E2598"} margin={"10px 0"} width={{base:"100%",md:"40%",lg:"25%"}} px={"40px"} _hover={"none"} color="white">Membership Videos</Button>
+                    </Box>
+                    <Flex justifyContent={"space-between"}margin={"20px 0"} flexDirection={{base:"column",md:"column",lg:"row"}} alignItems={"center"}>
+                        <Text fontSize={{base:"30px",md:"22px"}} fontFamily={"AvenirLT"} fontWeight={"bold"}>3 Crypto courses</Text>
+                        <Button color={"#000000"} outline={"none"} fontSize={"16px"} width={{base:"100%",md:"100%",lg:"35%"}} size="md" border={"1px solid #000000"} backgroundColor={"#ffffff"} >
                             Create New Courses
                         </Button>
                     </Flex>
