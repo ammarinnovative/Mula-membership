@@ -1,6 +1,6 @@
 import React from 'react'
 import { Text , Stack, Image } from '@chakra-ui/react'
-export default function ActiveProfile({data}) {
+export default function ChatsActiveProfile({data}) {
   return (
     data.map((d)=>{
       return(

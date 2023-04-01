@@ -5,7 +5,6 @@ import { LoginPage } from '../Views/LoginPage/LoginPage'
 import { SignUp } from '../Views/SignupPage/SignUp'
 import { Courses } from '../Views/Courses/Courses'
 import { UserScreen } from '../Views/UsersScreen/UsersScreen'
-import SettingsScreen from '../Views/SettingsScreen/setting'
 import SingleCourse from '../Views/SingleCourse/SingleCourse'
 import ChatsScreen from '../Views/ChatsScreen/ChatsScreen'
 
@@ -21,7 +20,6 @@ export const Router = ()=>{
             <Route path="/dashboard/courses" element={<Courses />}/>
             <Route path="/dashboard/courses" element={<Courses />}/>
             <Route path="/dashboard/user" element={<UserScreen />}/>
-            <Route path="/dashboard/settingsscreen" element={<SettingsScreen/>}/>
             <Route path="/dashboard/singleCourse" element={<SingleCourse/>}/>
             <Route path="/dashboard/chatsScreen" element={<ChatsScreen/>}/>
            

@@ -8,7 +8,7 @@ import CahtProfilein from "../../Assets/Images/cahtProfilein.png"
 import Avatar from "../../Assets/Images/Avatar.png"
 import Avatar2 from "../../Assets/Images/Avatar2.png"
 import Avatar3 from "../../Assets/Images/Avatar3.png"
-import ActiveProfile from '../../Components/ActiveProfile/ActiveProfile';
+import ActiveProfile from '../../Components/ChatsActiveProfile/ChatsActiveProfile';
 import CahtProfilein2 from "../../Assets/Images/cahtProfilein2.png"
 import Avatar4 from "../../Assets/Images/Avatar4.png"
 
