@@ -2,7 +2,6 @@ import { LoginPage } from './Views/LoginPage/LoginPage';
 // 1. Import the extendTheme function
 import { extendTheme, ChakraProvider } from '@chakra-ui/react'
 import { Home } from './Views/Home/Home';
-import { SignUp } from './Views/SignupPage/SignUp';
 import { Router } from './routes/routes';
 
 
@@ -22,9 +21,7 @@ const theme = extendTheme({ colors })
 function App() {
   return (
     <ChakraProvider theme={theme}>
-      {/* <LoginPage /> */}
-      {/* <SignUp /> */}
-      {/* <Home /> */}
+     
       <Router />
     </ChakraProvider>
   )

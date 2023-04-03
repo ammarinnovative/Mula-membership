@@ -1,9 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap');
-@font-face {
-  font-family: 'AvenirLT';
-  src: url("./Fonts/AvenirLTProMedium.otf");
-}
-
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
 
 .boxMode{
   background-position-y:bottom;
@@ -12,3 +7,8 @@
   border-color:#ffffff !important;
 }
 
+
+
+body{
+  font-family: 'Poppins', sans-serif !important;
+}
