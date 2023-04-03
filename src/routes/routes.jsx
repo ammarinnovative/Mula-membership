@@ -8,7 +8,6 @@ import { UserScreen } from '../Views/UsersScreen/UsersScreen'
 import SingleCourse from '../Views/SingleCourse/SingleCourse'
 import ChatsScreen from '../Views/ChatsScreen/ChatsScreen'
 
-
 export const Router = ()=>{
     return(
 <Box>

@@ -74,9 +74,9 @@ const [data3,setData3] = useState([
 
   return (
    <Sidebar>
-        <Stack gap={"20px"} direction={"column, row"}>
+        <Stack spacing={"20px"} direction={"row"} flexDirection={{base:"column", sm:"", md: 'row', lg: '', '2xl': ''}}>
             {/* profile */}
-            <Stack  flex={"1"} overflow={"auto"}height={"820px"}>
+            <Stack  flex={"1"} overflow={"auto"}height={"820px"} w={{base:"100%", sm:"", md: 'row', lg: '', '2xl': ''}} >
                 <Heading as="h2" size="md">
                     All Chats
                 </Heading>
