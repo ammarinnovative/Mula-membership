@@ -49,7 +49,7 @@ const LinkItems = [
   { name: 'Home', icon: FaHome, url: '/' },
   { name: 'Courses', icon: BsFillPlayCircleFill, url: '/dashboard/Courses' },
   { name: 'Tiers', icon: FaDollarSign, url: '/dashboard/Tiers' },
-  { name: 'Chat', icon: BsFillChatTextFill, url: '/dashboard' },
+  { name: 'Chat', icon: BsFillChatTextFill, url: '/dashboard/ChatsScreen' },
   { name: 'Users', icon: FaUserCheck, url: '/dashboard/User' },
   { name: 'Settings', icon: FiSettings, url: '/dashboard/Setting' },
 ];
