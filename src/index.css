@@ -12,3 +12,9 @@
 body{
   font-family: 'Poppins', sans-serif !important;
 }
+.ant-picker-dropdown.css-dev-only-do-not-override-1e3x2xa.ant-picker-dropdown-placement-bottomLeft {
+  z-index: 10000;
+}
+.apexcharts-toolbar {
+  display: none !important;
+}
