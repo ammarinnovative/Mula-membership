@@ -1,5 +1,5 @@
 import { extendTheme, ChakraProvider, Center, Checkbox, ButtonGroup, CheckboxGroup, Circle, HStack, Box, Square, Flex, Text, Image, Button } from '@chakra-ui/react'
-import { Home } from '../Views/Home/Home'
+import { Home } from "../Views/Home/Home";
 import { BrowserRouter as Main,Routes,Route } from 'react-router-dom'
 import { LoginPage } from '../Views/LoginPage/LoginPage'
 import { Courses } from '../Views/Courses/Courses'
@@ -9,7 +9,7 @@ import ChatsScreen from '../Views/ChatsScreen/ChatsScreen'
 import { Setting } from '../Views/Setting/Setting'
 import { Tiers } from '../Views/Tiers/Tier'
 import {UserCourses} from "../Views/UsersScreen/UserCourses";
-import MeetingSchedule from '../Views/Zoom Meeting/MeetingSchedule'
+import MeetingSchedule from '../Views/ZoomMeeting/MeetingSchedule'
 import UploadMember from "../Views/UploadMembership/UploadMembership";
 
 

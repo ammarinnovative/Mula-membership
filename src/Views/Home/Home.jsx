@@ -22,10 +22,9 @@ import {
 } from '@chakra-ui/react'
 import { Link } from 'react-router-dom';
 
+
+
 export const Home = () => {
-
-
-
     const [data, setData] = useState(
         [
             {
