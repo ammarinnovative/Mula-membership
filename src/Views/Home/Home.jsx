@@ -2,7 +2,7 @@ import { extendTheme, Select, AvatarGroup, Wrap, WrapItem, ChakraProvider, Input
 import Sidebar from '../../Components/Sidebar/Sidebar.jsx'
 import { FaPlusCircle } from "react-icons/fa";
 import Detais from "../../Components/DetailsCard/Detail";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Calendar } from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import ReactApexChart from "react-apexcharts";
@@ -20,7 +20,7 @@ import {
     useDisclosure,
 
 } from '@chakra-ui/react'
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import store from '../../app/store.js';
 
@@ -28,10 +28,15 @@ import store from '../../app/store.js';
 
 export const Home = () => {
 
+    const navigate = useNavigate();
+    const selector = useSelector(store => store);
 
-    const selector = useSelector(store=>store);
+    useEffect(() => {
+        if(selector?.user?.user === null){
+            navigate('/login')
+        }
+    }, [selector])
 
-    console.log(selector)
     const [data, setData] = useState(
         [
             {
@@ -173,20 +178,20 @@ export const Home = () => {
                     <ModalOverlay />
                     <ModalContent>
                         <Box display={"flex"} justifyContent={"space-between"} alignItems={"center"}>
-                        <ModalHeader display={"flex"} alignItems={"center"}><Box cursor={"pointer"} onClick={onClose}><AiOutlineArrowLeft /></Box><Text marginLeft={"10px"} width={"200px"} fontSize={"20px"}>Choose an option</Text></ModalHeader>
-                        <Box marginRight={"10px"} onClick={onClose}><Button>Next</Button></Box>
+                            <ModalHeader display={"flex"} alignItems={"center"}><Box cursor={"pointer"} onClick={onClose}><AiOutlineArrowLeft /></Box><Text marginLeft={"10px"} width={"200px"} fontSize={"20px"}>Choose an option</Text></ModalHeader>
+                            <Box marginRight={"10px"} onClick={onClose}><Button>Next</Button></Box>
                         </Box>
                         <ModalBody>
                             <Box display={"flex"} gap={"10px"}>
-                               <Box flex={"1"} shadow={"md"} backgroundColor={"#0d1140"} display={"flex"} justifyContent={"center"} alignItems={"center"} height={"15vh"} fontFamily={"poppins"} color={"white"} rounded={"md"}><Link  to={"/dashboard/CourseDetails"}><Box display={"flex"}  cursor={"pointer"} alignItems={"center"} flexDirection={"column"}><CgAdd fontSize={"24px"} />  Upload Courses</Box></Link></Box>
-                                <Box flex={"1"} shadow={"md"} backgroundColor={"#fff"} display={"flex"} justifyContent={"center"} alignItems={"center"} height={"15vh"} border={"1px solid black"} fontFamily={"poppins"} color={"black"} rounded={"md"}><Link to={"/dashboard/UploadMembershipVideos"}><Box display={"flex"}  cursor={"pointer"} alignItems={"center"} flexDirection={"column"}><CgAdd fontSize={"24px"} />Upload Membership Videos</Box></Link></Box>
+                                <Box flex={"1"} shadow={"md"} backgroundColor={"#0d1140"} display={"flex"} justifyContent={"center"} alignItems={"center"} height={"15vh"} fontFamily={"poppins"} color={"white"} rounded={"md"}><Link to={"/dashboard/CourseDetails"}><Box display={"flex"} cursor={"pointer"} alignItems={"center"} flexDirection={"column"}><CgAdd fontSize={"24px"} />  Upload Courses</Box></Link></Box>
+                                <Box flex={"1"} shadow={"md"} backgroundColor={"#fff"} display={"flex"} justifyContent={"center"} alignItems={"center"} height={"15vh"} border={"1px solid black"} fontFamily={"poppins"} color={"black"} rounded={"md"}><Link to={"/dashboard/UploadMembershipVideos"}><Box display={"flex"} cursor={"pointer"} alignItems={"center"} flexDirection={"column"}><CgAdd fontSize={"24px"} />Upload Membership Videos</Box></Link></Box>
                             </Box>
                         </ModalBody>
                     </ModalContent>
                 </Modal>
                 <Box gap={"20px"} display={{ lg: "flex" }} flexDirection={{ base: "column", md: "column", lg: "row" }} width={"100%"}>
                     <Box width={{ base: "100%", md: "50%" }} flex={"1"}>
-                        <Text fontSize={{ base: "25px", md: "30px" }} textAlign={{ base: "center", md: "center",lg:"left" }} fontWeight={"600"}>Manage Your Courses</Text>
+                        <Text fontSize={{ base: "25px", md: "30px" }} textAlign={{ base: "center", md: "center", lg: "left" }} fontWeight={"600"}>Manage Your Courses</Text>
                         <Text textAlign={{ base: "center", md: "cneter", lg: "left" }}>Upload your courses to click on the plus icon</Text>
                     </Box>
                     <Box width={"100%"} flex={"1"}>
