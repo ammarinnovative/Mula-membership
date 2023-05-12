@@ -11,7 +11,8 @@ import { Tiers } from '../Views/Tiers/Tier'
 import {UserCourses} from "../Views/UsersScreen/UserCourses";
 import MeetingSchedule from '../Views/ZoomMeeting/MeetingSchedule'
 import UploadMember from "../Views/UploadMembership/UploadMembership";
-
+import UploadVideo from '../Views/UploadVideos/UploadVideo';
+import ChatRoom from '../Views/ChatRoom/ChatRoom';
 
 export const Router = ()=>{
     return(
@@ -29,6 +30,8 @@ export const Router = ()=>{
             <Route path="/dashboard/Tiers" element={<Tiers />}/>
             <Route path="/dashboard/MeetingSchdule" element={<MeetingSchedule />}/>
             <Route path="/dashboard/UploadMembershipVideos" element={<UploadMember />}/>
+            <Route path="/dashboard/UploadVideo" element={<UploadVideo />}/>
+            <Route path="/dashboard/ChatRoom" element={<ChatRoom />}/>
         </Routes>
     </Main>
 </Box>

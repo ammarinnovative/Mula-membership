@@ -1,21 +1,23 @@
 import axios from "axios";
 import { baseURL } from "./config";
 
-export const GET = async (url,headers = {})=>{
+export const GET = async (url, headers = {}) => {
     try {
-        const res = await axios.get(baseURL+url,{
-            headers:{
-                ...headers,
-            },
-            validatesStatus:status=>{
-                return status >=200;
-            }
-        })
-        return res.data;
+      const res = await axios.get(baseURL + url, {
+        headers: {
+          ...headers,
+        },
+        validateStatus: status => {
+          // console.log(status);
+          return status >= 200;
+        },
+      });
+      return res.data;
     } catch (error) {
-        console.log(error);
+      // console.log(error);
+      return error;
     }
-}
+  };
 
 export const POST = async (url,data={},headers={})=>{
     try {

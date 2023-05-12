@@ -1,1 +1,2 @@
-export const baseURL = "https://mulamembership.link"
+export const baseURL = "https://mula.thewebtestlink.xyz/api/";
+export const imageURL = "https://mula.thewebtestlink.xyz/";

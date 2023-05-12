@@ -21,10 +21,17 @@ import {
 
 } from '@chakra-ui/react'
 import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import store from '../../app/store.js';
 
 
 
 export const Home = () => {
+
+
+    const selector = useSelector(store=>store);
+
+    console.log(selector)
     const [data, setData] = useState(
         [
             {
@@ -47,7 +54,6 @@ export const Home = () => {
 
 
     const [date, setDate] = useState(new Date());
-    console.log(date)
     const getData = (date) => {
         setDate(date)
     }

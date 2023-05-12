@@ -1,8 +1,8 @@
-import Logo from "../../Assets/Images/Logo.png"
+import Logo from "../../Assets/Images/Logo.png";
 import { FaHome, FaUserCheck, FaDollarSign } from "react-icons/fa";
-import React, { ReactNode, useEffect, useState } from 'react';
-import { Link as ReactLink, useLocation } from "react-router-dom";
-import { SearchIcon } from '@chakra-ui/icons'
+import React, { ReactNode, useEffect, useState } from "react";
+import { Link as ReactLink, useLocation, useNavigate } from "react-router-dom";
+import { SearchIcon } from "@chakra-ui/icons";
 import {
   IconButton,
   Avatar,
@@ -29,7 +29,7 @@ import {
   MenuList,
   InputGroup,
   Input,
-} from '@chakra-ui/react';
+} from "@chakra-ui/react";
 import {
   FiHome,
   FiTrendingUp,
@@ -40,42 +40,52 @@ import {
   FiMenu,
   FiBell,
   FiChevronDown,
-} from 'react-icons/fi';
-import { IconType } from 'react-icons';
-import { ReactText } from 'react';
-import { BsWallet, BsFillChatTextFill, BsFillPlayCircleFill } from "react-icons/bs";
+} from "react-icons/fi";
+import { IconType } from "react-icons";
+import { ReactText } from "react";
+import {
+  BsWallet,
+  BsFillChatTextFill,
+  BsFillPlayCircleFill,
+  BsFillCloudUploadFill,
+} from "react-icons/bs";
+import { logout } from "../../reducers/UserReducer";
+import { useDispatch } from "react-redux";
+import { RiWechatPayLine } from 'react-icons/ri';
+import { Button } from "antd";
 
 const LinkItems = [
-  { name: 'Home', icon: FaHome, url: '/' },
-  { name: 'Courses', icon: BsFillPlayCircleFill, url: '/dashboard/Courses' },
-  { name: 'Tiers', icon: FaDollarSign, url: '/dashboard/Tiers' },
-  { name: 'Chat', icon: BsFillChatTextFill, url: '/dashboard/ChatsScreen' },
-  { name: 'Users', icon: FaUserCheck, url: '/dashboard/User' },
-  { name: 'Settings', icon: FiSettings, url: '/dashboard/Setting' },
+  { name: "Home", icon: FaHome, url: "/" },
+  { name: "Courses", icon: BsFillPlayCircleFill, url: "/dashboard/Courses" },
+  { name: "Tiers", icon: FaDollarSign, url: "/dashboard/Tiers" },
+  { name: "Chat", icon: BsFillChatTextFill, url: "/dashboard/ChatsScreen" },
+  { name: "Users", icon: FaUserCheck, url: "/dashboard/User" },
+  { name: "Settings", icon: FiSettings, url: "/dashboard/Setting" },
+  {name: "Upload Videos",icon: BsFillCloudUploadFill,url: "/dashboard/UploadVideo",},
+  {name: "Create Chats",icon: RiWechatPayLine,url: "/dashboard/ChatRoom",},
 ];
 
 export default function SidebarWithHeader({ children }) {
-
   const location = useLocation();
-  const [curLoc, setCurLoc] = useState('Overview');
+  const [curLoc, setCurLoc] = useState("Overview");
 
   useEffect(() => {
-    let tempLoc = String(location.pathname).split('/')[2];
-    if (tempLoc !== '' || tempLoc !== undefined || tempLoc !== null) {
+    let tempLoc = String(location.pathname).split("/")[2];
+    if (tempLoc !== "" || tempLoc !== undefined || tempLoc !== null) {
       setCurLoc(tempLoc);
     } else {
-      setCurLoc('Overview');
+      setCurLoc("Overview");
     }
-  }, [location])
+  }, [location]);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const [same,setSame] = useState("true");
+  const [same, setSame] = useState("true");
   return (
-    <Box minH="100vh" bg={useColorModeValue('gray.100', 'gray.900')}>
+    <Box minH="100vh" bg={useColorModeValue("gray.100", "gray.900")}>
       <SidebarContent
         onClose={() => onClose}
-        display={{ base: 'none', md: 'block' }}
+        display={{ base: "none", md: "block" }}
       />
       <Drawer
         autoFocus={false}
@@ -84,7 +94,8 @@ export default function SidebarWithHeader({ children }) {
         onClose={onClose}
         returnFocusOnClose={false}
         onOverlayClick={onClose}
-        size="full">
+        size="full"
+      >
         <DrawerContent>
           <SidebarContent onClose={onClose} />
         </DrawerContent>
@@ -98,35 +109,40 @@ export default function SidebarWithHeader({ children }) {
   );
 }
 
-const SidebarContent = ({ onClose, ...rest}) => {
-
-
+const SidebarContent = ({ onClose, ...rest }) => {
   const location = useLocation();
-  console.log(location.pathname,"======>",LinkItems);
 
   return (
     <Box
       transition="3s ease"
       borderRight="1px"
       backgroundColor={"#0d1140"}
-      borderRightColor={useColorModeValue('gray.200', 'gray.700')}
-      w={{ base: 'full', md: 60 }}
+      borderRightColor={useColorModeValue("gray.200", "gray.700")}
+      w={{ base: "full", md: 60 }}
       pos="fixed"
       h="full"
-      // color="red" 
+      // color="red"
       paddingTop={"22px"}
-
-      {...rest}>
+      {...rest}
+    >
       <Flex h="20" alignItems="center" mx="8" justifyContent="space-between">
         <Text fontSize="2xl" fontFamily="monospace" fontWeight="bold">
           <Image width={"130px"} src={Logo} alt="img" />
         </Text>
-        <CloseButton display={{ base: 'flex', md: 'none' }} onClick={onClose} />
+        <CloseButton display={{ base: "flex", md: "none" }} onClick={onClose} />
       </Flex>
-      <Box mt={"40px"}  >
+      <Box mt={"40px"}>
         {LinkItems.map((link) => (
           <Link as={ReactLink} backgroundColor={"#fff"} to={link.url}>
-            <NavItem url={link?.url} width={"100%"} marginLeft={"0"} borderRadius={"0"} key={link.name} color={"gray.12"} icon={link.icon}>
+            <NavItem
+              url={link?.url}
+              width={"100%"}
+              marginLeft={"0"}
+              borderRadius={"0"}
+              key={link.name}
+              color={"gray.12"}
+              icon={link.icon}
+            >
               {link.name}
             </NavItem>
           </Link>
@@ -136,13 +152,15 @@ const SidebarContent = ({ onClose, ...rest}) => {
   );
 };
 
-
 const NavItem = ({ icon, url, children, ...rest }) => {
-
   const location = useLocation();
-  console.log(url, '---' ,location.pathname);
   return (
-    <Link color={url===location.pathname?"#2c339e":"#fff"} href="#" style={{ textDecoration: 'none' }} _focus={{ boxShadow: 'none' }}>
+    <Link
+      color={url === location.pathname ? "#2c339e" : "#fff"}
+      href="#"
+      style={{ textDecoration: "none" }}
+      _focus={{ boxShadow: "none" }}
+    >
       <Flex
         align="center"
         p="4"
@@ -150,23 +168,23 @@ const NavItem = ({ icon, url, children, ...rest }) => {
         borderRadius="lg"
         role="group"
         cursor="pointer"
-        bg={url === location.pathname ? '#fff' : 'transparent'}
-        {...rest}>
-        {icon && (
-          <Icon
-            mr="4"
-            fontSize="16"
-            as={icon}
-          />
-        )}
+        bg={url === location.pathname ? "#fff" : "transparent"}
+        {...rest}
+      >
+        {icon && <Icon mr="4" fontSize="16" as={icon} />}
         {children}
       </Flex>
     </Link>
   );
 };
 
-
 const MobileNav = ({ onOpen, tarLoc, ...rest }) => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const clearItem = () => {
+    dispatch(logout());
+    navigate("/login");
+  };
   return (
     <Flex
       ml={{ base: 0, md: 60 }}
@@ -174,35 +192,45 @@ const MobileNav = ({ onOpen, tarLoc, ...rest }) => {
       height="20"
       alignItems="center"
       backgroundColor={"#0d1140"}
-      bg={useColorModeValue('white', 'gray.900')}
+      bg={useColorModeValue("white", "gray.900")}
       borderBottomWidth="1px"
-      borderBottomColor={useColorModeValue('gray.200', 'gray.700')}
-      justifyContent={{ base: 'space-between', md: 'space-between' }}
-      {...rest}>
+      borderBottomColor={useColorModeValue("gray.200", "gray.700")}
+      justifyContent={{ base: "space-between", md: "space-between" }}
+      {...rest}
+    >
       <Box>
-        <Text display={{ base: "none", md: "block" }} fontWeigh={"bold"} fontSize={"27px"} color={"black"}>{tarLoc ?? 'Overview'}</Text>
+        <Text
+          display={{ base: "none", md: "block" }}
+          fontWeigh={"bold"}
+          fontSize={"27px"}
+          color={"black"}
+        >
+          {tarLoc ?? "Overview"}
+        </Text>
       </Box>
       <IconButton
-        display={{ base: 'flex', md: 'none' }}
+        display={{ base: "flex", md: "none" }}
         onClick={onOpen}
         variant="outline"
         aria-label="open menu"
         icon={<FiMenu />}
       />
 
-
       <Text
-        display={{ base: 'flex', md: 'none' }}
+        display={{ base: "flex", md: "none" }}
         fontSize="2xl"
         fontFamily="monospace"
-        fontWeight="bold">
+        fontWeight="bold"
+      >
         <Image src={Logo} />
       </Text>
 
-      <HStack spacing={{ base: '0', md: '6' }}>
+      <HStack spacing={{ base: "0", md: "6" }}>
         <InputGroup>
-          <InputLeftElement pointerEvents='none'
-            children={<SearchIcon color='gray.300' />} />
+          <InputLeftElement
+            pointerEvents="none"
+            children={<SearchIcon color="gray.300" />}
+          />
           <Input placeholder="Search something" />
         </InputGroup>
         <IconButton
@@ -211,41 +239,45 @@ const MobileNav = ({ onOpen, tarLoc, ...rest }) => {
           aria-label="open menu"
           icon={<FiBell />}
         />
-        <Flex alignItems={'center'}>
+        <Flex alignItems={"center"}>
           <Menu>
             <MenuButton
               py={2}
               transition="all 0.3s"
-              _focus={{ boxShadow: 'none' }}>
+              _focus={{ boxShadow: "none" }}
+            >
               <HStack>
                 <Avatar
-                  size={'sm'}
+                  size={"sm"}
                   src={
-                    'https://images.unsplash.com/photo-1619946794135-5bc917a27793?ixlib=rb-0.3.5&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&s=b616b2c5b373a80ffc9636ba24f7a4a9'
+                    "https://images.unsplash.com/photo-1619946794135-5bc917a27793?ixlib=rb-0.3.5&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&s=b616b2c5b373a80ffc9636ba24f7a4a9"
                   }
                 />
                 <VStack
-                  display={{ base: 'none', md: 'flex' }}
+                  display={{ base: "none", md: "flex" }}
                   alignItems="flex-start"
                   spacing="1px"
-                  ml="2">
+                  ml="2"
+                >
                   <Text fontSize="xs" color="gray.600">
                     Admin
                   </Text>
                 </VStack>
-                <Box display={{ base: 'none', md: 'flex' }}>
+                <Box display={{ base: "none", md: "flex" }}>
                   <FiChevronDown />
                 </Box>
               </HStack>
             </MenuButton>
             <MenuList
-              bg={useColorModeValue('white', 'gray.900')}
-              borderColor={useColorModeValue('gray.200', 'gray.700')}>
+              bg={useColorModeValue("white", "gray.900")}
+              borderColor={useColorModeValue("gray.200", "gray.700")}
+            >
               <MenuItem>Profile</MenuItem>
               <MenuItem>Settings</MenuItem>
               <MenuItem>Billing</MenuItem>
               <MenuDivider />
-              <MenuItem>Sign out</MenuItem>
+
+              <MenuItem onClick={() => clearItem()}>Sign out</MenuItem>
             </MenuList>
           </Menu>
         </Flex>
