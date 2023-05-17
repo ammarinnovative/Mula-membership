@@ -86,6 +86,7 @@ const UploadVideo = () => {
     });
     setData(res.data);
     setLoading(false);
+   
   };
 
 

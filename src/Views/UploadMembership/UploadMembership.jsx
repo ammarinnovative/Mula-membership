@@ -20,92 +20,135 @@ import Upload_your_video_1 from "../../Assets/Images/Upload_your_video_1.png";
 import Upload_your_video_2 from "../../Assets/Images/Upload_your_video_2.png";
 import { Title } from "chart.js";
 import { useToast } from "@chakra-ui/react";
-import { POST } from "../../utilities/ApiProvider";
+import { POST, PUT } from "../../utilities/ApiProvider";
 import store from "../../app/store";
 import { useSelector } from "react-redux";
 import { GET } from "../../utilities/ApiProvider";
 import { TailSpin } from "react-loader-spinner";
-
-
+import { Form, json, useParams } from "react-router-dom";
+import Item from "antd/es/list/Item";
+import { FaEdit } from "react-icons/fa";
+import { DELETE } from "../../utilities/ApiProvider";
+import { MdDelete } from "react-icons/md";
 
 export default function UploadMember() {
   const selector = useSelector((state) => state);
-  const [loading,setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const toast = useToast();
+  const [catagories, setCatagories] = useState([]);
+  const [user, setUser] = useState(null);
+  const [data, setData] = useState([]);
+  const [loadings, setLoadings] = useState(false);
+  const params = useParams();
+  const [catLoad,setCarLoad] = useState(false);
+  const[updateId,setUpdateId] = useState({});
+  const [toggle,setToggle] = useState(false);
 
-  const token = selector.user.user.data.data.JWT_TOKEN;
+  const getCatagories = async () => {
+    setCarLoad(true);
+    const res = await GET(
+      "courseCategory/getAllCourseCategoryList?limit=10&page=1",
+      {
+        authorization: `Bearer ${user.JWT_TOKEN}`,
+      }
+    );
+    setCatagories(res.data);
+    setCarLoad(false);
+  };
 
-  const getCatagories = async ()=>{
-    const res = await GET("courseCategory/getAllCourseCategoryList?limit=10&page=1",  {
-      authorization: `Bearer ${token}`,
+
+  const [value, setValue] = useState({
+    course_category_name: "",
+  });
+
+
+
+
+  useEffect(() => {
+    if (user) {
+      getCatagories();
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (selector) {
+      setUser(selector?.user?.user?.data?.data);
+    }
+  }, [selector]);
+
+  const createCat = async () => {
+    setLoading(true);
+    const formData = new FormData();
+    for (let key in value) {
+      formData.append(key, value[key]);
+    }
+    const res = await POST("courseCategory/addCourseCategoryDetail", value, {
+      authorization: `bearer ${user.JWT_TOKEN}`,
     });
     console.log(res);
-    
-    
-  }
-
-  const [value,setValue] = useState({
-    course_category_name:""
-  });
-  console.log(value);
-
-  
-  useEffect(()=>{
-getCatagories();
-  },[]);
-
-
-
-
-  // const createCat = async ()=>{
-  //   const formData = new FormData();
-  //   formData.append(value);
-    
-  // }
-  
-      const createCat = async ()=>{
-        setLoading(true);
-        const formData = new FormData();
-        for (let key in value) {
-          formData.append(key, value[key]);
-        }
-        const res = await POST("courseCategory/addCourseCategoryDetail",value,{
-          authorization: `bearer ${token}`
-        })
-        if(res.status==200){
-          toast({
-            status:"success",
-            position:"bottom-left",
-            duration:5000,
-            isClosable:true,
-            title:res.data.message
-
-          })
-          setLoading(false);
-        }
-        console.log(res.data.message);
-        setValue({course_category_name:""})
-      }
-
+    if (res.status == 200) {
+      toast({
+        status: "success",
+        position: "bottom-left",
+        duration: 5000,
+        isClosable: true,
+        title: res.data.message,
+      });
+      setLoading(false);
+      getCatagories();
+    }
+    else{
+      toast({
+        status: "error",
+        position: "bottom-left",
+        duration: 5000,
+        isClosable: true,
+        description: res.data.error,
+      });
+      setLoading(false);
+    }
+    setValue({ course_category_name: "" });
+  };
 
   const [fields, setFields] = useState({
-    name: "",
-    category: "",
-    membershipDetails: "",
-    price: 0,
-    thumbnail: "",
-    sub_title:"ssdjdskj"
+    category: [],
+    price: 5,
+    video: "63f9516b352a3cbh2ea6b8dc",
   });
-  console.log(fields)
+
+  
+
+
+const deleteCat =async (_id)=>{
+  
+  const res = await DELETE(`courseCategory/delete/${_id}`,{
+    authorization: `bearer ${user.JWT_TOKEN}`
+  });
+  console.log(res);
+
+  try {
+    if(res.data.status == 200){
+      toast({
+        status:"success",
+        description:"Deleted successfully",
+        isClosable:true,
+        position:"bottom-left",
+        duration:5000
+      })
+    }
+    
+  } catch (error) {
+    
+  }
+  
+  getCatagories();
+
+  
+}
 
   const uploadMembership = async () => {
-    if (
-      !fields.title &&
-      !fields.category &&
-      !fields.membershipDetails &&
-      !fields.price &&
-      !fields.thumbnail
-    ) {
+    setLoadings(true);
+    if (fields.category.length == 0 || !fields.video) {
       toast({
         description: "Please fill all the fields",
         status: "error",
@@ -113,19 +156,21 @@ getCatagories();
         position: "bottom-left",
         duration: 3000,
       });
+      setLoadings(false);
       return;
     }
 
-    const res = await POST("membership", fields, {
-      authorization: `Bearer ${selector.user.user.data.data.JWT_TOKEN}`,
+    const jsonFields = JSON.stringify(fields);
+    debugger;
+    const res = await POST(`membership/playlist/${params.id}`, jsonFields, {
+      authorization: `Bearer ${user.JWT_TOKEN}`,
     });
-    console.log(res);
 
     try {
       if (res.status == 200) {
         toast({
           description: res.data.message,
-          status: "error",
+          status: "success",
           isClosable: true,
           position: "bottom-left",
           duration: 3000,
@@ -140,8 +185,52 @@ getCatagories();
         });
       }
     } catch (error) {}
+
+    setLoadings(false);
   };
 
+
+  const updateValue = (data)=>{
+    setToggle(true);
+    setUpdateId(data._id);
+    setValue({course_category_name:data?.course_category_name})
+  }
+
+  const Updated = async ()=>{
+    setLoading(true);
+    const res = await PUT(`courseCategory/update/${updateId}`,value,{
+      authorization: `bearer ${user.JWT_TOKEN}`
+    })
+    console.log(res);
+
+    try {
+      if(res.status==200){
+        toast({
+          position:"bottom-left",
+          status:"success",
+          description:"Category Updated",
+          isClosable:true,
+          duration:5000
+        })
+      }
+    } catch (error) {
+      toast({
+        position:"bottom-left",
+        duration:5000,
+        status:"success",
+        isClosable:true,
+        description:res.data.error
+      })
+    }
+
+    getCatagories();
+    setToggle(false);
+    setValue({course_category_name:""})
+    setLoading(false)
+  
+  }
+  
+  
   return (
     <Sidebar>
       <Flex
@@ -150,54 +239,27 @@ getCatagories();
         textAlign={{ base: "center", md: "left", lg: "", "2xl": "" }}
       >
         <Stack flex={"2"}>
-          <Box mb={"20px"}>
-            <Heading as="h2" size="md">
-              Crypto Explained: Security Action
-            </Heading>
-          </Box>
-
           {/* input filed */}
           <Box>
-            <Input
-              type={Text}
-              border={"1px solid #000"}
-              value={fields.name}
-              onChange={(e) => {
-                setFields({ ...fields, name: e.target.value });
-              }}
-              placeholder="Crypto Explained: Security Action"
-              _placeholder={{ color: "#867878" }}
-            />
             <Select
               value={fields.category}
               onChange={(e) => {
-                setFields({ ...fields, category: e.target.value });
+                setFields({ ...fields, category: [e.target.value] });
               }}
               placeholder="Crypto"
               mt={"15px"}
               border={"1px solid #000"}
               _placeholder={{ color: "#867878", fontWeight: "bold" }}
             >
-              <option value="option1">Option 1</option>
-              <option value="option2">Option 2</option>
-              <option value="option3">Option 3</option>
+              {catagories.map((Item) => {
+                return (
+                  <option value={Item._id}>{Item.course_category_name}</option>
+                );
+              })}
             </Select>
-            <Textarea
-              value={fields.description}
-              onChange={(e) => {
-                setFields({ ...fields, membershipDetails: e.target.value });
-              }}
-              type={Text}
-              mt={"15px"}
-              border={"1px solid #000"}
-              placeholder="Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur."
-              _placeholder={{ color: "#867878" }}
-            ></Textarea>
+
             <Input
               value={fields.price}
-              onChange={(e) => {
-                setFields({ ...fields, price: e.target.value });
-              }}
               type={Text}
               mt={"15px"}
               border={"1px solid #000"}
@@ -208,15 +270,15 @@ getCatagories();
 
           <Box>
             <Heading as="h2" size="md" mt={"30px"} mb={"20px"}>
-              Thumbnail Image
+              Upload Video
             </Heading>
           </Box>
           <Box>
             <Input
               type={"file"}
-              onChange={(e) => {
-                setFields({ ...fields, thumbnail: e.target.files[0] });
-              }}
+              // onChange={(e) => {
+              //   setFields({...fields,video:e.target.files[0]});
+              // }}
               display={"none"}
               id={"file"}
             ></Input>
@@ -233,7 +295,7 @@ getCatagories();
                 w={{ base: "100%", md: "35%", lg: "", "2xl": "" }}
               >
                 <AiOutlineUpload fontSize={"50px"} />
-                <Text>upload Thumbnail Image</Text>
+                <Text>upload Video</Text>
               </Stack>
             </label>
           </Box>
@@ -255,7 +317,20 @@ getCatagories();
                 border: "1px solid #000",
               }}
             >
-              Publish
+              {loadings ? (
+                <TailSpin
+                  height="20"
+                  width="20"
+                  color="blue"
+                  ariaLabel="tail-spin-loading"
+                  radius="1"
+                  wrapperStyle={{}}
+                  wrapperClass=""
+                  visible={true}
+                />
+              ) : (
+                "Publish"
+              )}
             </Button>
           </Box>
         </Stack>
@@ -270,7 +345,7 @@ getCatagories();
               fontSize={{ base: "15px", md: "18px" }}
               mb={"10px"}
             >
-              Create New Category
+            
             </Text>
             <Box mt={"30px"} position={"relative"}>
               <Input
@@ -281,11 +356,40 @@ getCatagories();
                 placeholder="Enter Name"
                 name="course_category_name"
                 value={value.course_category_name}
-                onChange={(e)=>{setValue({course_category_name:e.target.value})}}
+                onChange={(e) => {
+                  setValue({ course_category_name: e.target.value });
+                }}
                 _placeholder={{ color: "#fff" }}
               />
               <Box position={"absolute"} right={"8px"} top={"8px"}>
-                <Button
+                {
+                  toggle?<Button
+                  h={"35px"}
+                  onClick={Updated}
+                  border={"1px solid #fff"}
+                  cursor={"pointer"}
+                  _hover={{
+                    bg: "transparent",
+                    border: "1px solid #fff",
+                    color: "#fff",
+                    transition: "all 0.5s",
+                  }}
+                >
+                  {loading ? (
+                    <TailSpin
+                      height="20"
+                      width="20"
+                      color="blue"
+                      ariaLabel="tail-spin-loading"
+                      radius="1"
+                      wrapperStyle={{}}
+                      wrapperClass=""
+                      visible={true}
+                    />
+                  ) : (
+                    "Update"
+                  )}
+                </Button>:<Button
                   h={"35px"}
                   onClick={createCat}
                   border={"1px solid #fff"}
@@ -297,22 +401,74 @@ getCatagories();
                     transition: "all 0.5s",
                   }}
                 >
-                  {
-                    loading? 
+                  {loading ? (
                     <TailSpin
-                    height="20"
-                    width="20"
-                    color="blue"
-                    ariaLabel="tail-spin-loading"
-                    radius="1"
-                    wrapperStyle={{}}
-                    wrapperClass=""
-                    visible={true}
-                  />:"Create"
-                  }
+                      height="20"
+                      width="20"
+                      color="blue"
+                      ariaLabel="tail-spin-loading"
+                      radius="1"
+                      wrapperStyle={{}}
+                      wrapperClass=""
+                      visible={true}
+                    />
+                  ) : (
+                    "Create"
+                  )}
                 </Button>
+                }
               </Box>
             </Box>
+          </Box>
+          <Box>
+            <Text fontSize={"20px"} fontWeight={"bold"}>
+            {
+              catagories.length>0? "Created Categories":"No Categories found"
+             }
+            </Text>
+            {
+              catLoad?<Box>Loading....</Box>:catagories?.map((data)=>{
+                return(
+                  
+             <Box
+              display={"flex"}
+              padding={"10px"}
+              gap={"5px"}
+              justifyContent={"space-between"}
+              alignItems={"center"}
+              marginBottom={"10px"}
+              border={"1px solid gray"}
+              borderRadius={"5px"}
+            >
+              <Text>{data.course_category_name}</Text>
+              <Box display={"flex"} alignItems={"center"} gap={"8px"}>
+                <Box
+                  display={"flex"}
+                  gap={"5px"}
+                  cursor={"pointer"}
+                  alignItems={"center"}
+                  onClick={()=>{updateValue(data)}}
+                >
+                  <FaEdit fontSize={"20px"} />
+                  <Text>Edit</Text>
+                </Box>
+                <Box
+                  display={"flex"}
+                  gap={"5px"}
+                  cursor={"pointer"}
+                  alignItems={"center"}
+                  onClick={()=>{deleteCat(data._id)}}
+
+                >
+                  <MdDelete fontSize={"20px"} />
+                  <Text>Delete</Text>
+                </Box>
+              </Box>
+            </Box>
+                )
+              })
+            }
+           
           </Box>
         </Stack>
       </Flex>

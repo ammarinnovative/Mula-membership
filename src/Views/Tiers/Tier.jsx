@@ -41,6 +41,7 @@ import Item from "antd/es/list/Item";
 import ChatRoomList from "./ChatRoomList";
 import ReactPaginate from "react-paginate";
 import { TailSpin } from "react-loader-spinner";
+import { Link } from "react-router-dom";
 export const Tiers = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [data, setData] = useState("");
@@ -71,10 +72,11 @@ export const Tiers = () => {
     const res = await GET("membership?limit=23&page=", {
       authorization: `bearer ${user?.JWT_TOKEN}`,
     });
-    // console.log(res);
+    console.log(res);
     setMembershipPlan(res?.data);
     setStateLoad(false);
   };
+  
 
   useEffect(() => {
     if (selector) {
@@ -90,7 +92,6 @@ export const Tiers = () => {
 
   useEffect(() => {
     if (user) {
-      console.log(user);
       getData();
     }
   }, [user]);
@@ -142,15 +143,13 @@ export const Tiers = () => {
       formData.append(key, object[key]);
     }
 
-    formData.forEach((element) => {
-      console.log(element);
-    });
+    // formData.forEach((element) => {
+    // });
 
     const res = await POST("membership", formData, {
       authorization: `bearer ${user?.JWT_TOKEN}`,
     });
     setLoading(false);
-    console.log(res);
   };
 
   const changePage = ({ selected }) => {
@@ -181,7 +180,6 @@ export const Tiers = () => {
               </Text>
             </ModalHeader>
             <Button
-              _hover={"none"}
               mr={"12px"}
               color={"white"}
               px={"30px"}
@@ -389,6 +387,7 @@ export const Tiers = () => {
             {MembershipPlan?.length &&
               MembershipPlan?.map((item) => {
                 return (
+                  
                   <Box
                     backgroundColor={"#1e2598"}
                     margin={"20px 5px 20px 5px"}
@@ -399,6 +398,7 @@ export const Tiers = () => {
                     key={item._id}
                     alignSelf={"normal"}
                   >
+                    <Link to={`/dashboard/UploadMembershipVideos/${item._id}`}>
                     <Box
                       display={"flex"}
                       alignItems={"center"}
@@ -438,6 +438,7 @@ export const Tiers = () => {
                           })}
                       </ul>
                     </Flex>
+                  </Link>
                   </Box>
                 );
               })}

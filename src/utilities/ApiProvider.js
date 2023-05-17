@@ -51,7 +51,7 @@ export const PUT = async (url,data={},headers={})=>{
     }
 }
 
-const DELETE = async (url,headers={})=>{
+export const DELETE = async (url,headers={})=>{
     try {
         const res = axios.delete(baseURL+url,{
             headers:{

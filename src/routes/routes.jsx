@@ -29,7 +29,7 @@ export const Router = ()=>{
             <Route path="/dashboard/Setting" element={<Setting />}/>
             <Route path="/dashboard/Tiers" element={<Tiers />}/>
             <Route path="/dashboard/MeetingSchdule" element={<MeetingSchedule />}/>
-            <Route path="/dashboard/UploadMembershipVideos" element={<UploadMember />}/>
+            <Route path="/dashboard/UploadMembershipVideos/:id" element={<UploadMember />}/>
             <Route path="/dashboard/UploadVideo" element={<UploadVideo />}/>
             <Route path="/dashboard/ChatRoom" element={<ChatRoom />}/>
         </Routes>
