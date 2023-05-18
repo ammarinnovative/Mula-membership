@@ -22,6 +22,7 @@ import {
   ModalOverlay,
   useDisclosure,
   Stack,
+  Select,
   FormControl,
   FormLabel,
 } from "@chakra-ui/react";
@@ -49,7 +50,9 @@ const UploadVideo = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [state, setState] = useState(false);
+  const [Category, setCategory] = useState([]);
   const [user, setUser] = useState(null);
+  const [catVal,setCatVal] = useState([]);
   // const token = selector.user.user.data.data.JWT_TOKEN;
   const Upload = async () => {
     setState(true);
@@ -58,6 +61,7 @@ const UploadVideo = () => {
     const res = await POST("video", formData, {
       authorization: `bearer ${user?.JWT_TOKEN}`,
     });
+    console.log(res);
     if (res.status == 200) {
       toast({
         title: res.data.message,
@@ -77,6 +81,8 @@ const UploadVideo = () => {
         isClosable: true,
       });
     }
+
+    getVides();
   };
 
   const getVides = async () => {
@@ -86,9 +92,18 @@ const UploadVideo = () => {
     });
     setData(res.data);
     setLoading(false);
-   
   };
 
+  const getCategory = async () => {
+    const res = await GET(
+      `courseCategory/getAllCourseCategoryList?limit=10&page=1`,
+      {
+        authorization: `bearer ${user.JWT_TOKEN}`,
+      }
+    );
+    setCategory(res.data);
+    console.log(Category);
+  };
 
   useEffect(() => {
     if (selector) {
@@ -99,8 +114,11 @@ const UploadVideo = () => {
   useEffect(() => {
     if (user) {
       getVides();
+      getCategory();
     }
   }, [user]);
+
+  console.log(catVal);
 
   return (
     <Box>
@@ -149,6 +167,16 @@ const UploadVideo = () => {
                         height={"30px"}
                       />
                     </FormControl>
+                    <Select value={catVal} name="category" onChange={(e)=>{setCatVal([e.target.value])}} placeholder="Select option">
+                      {
+                        Category.map((item)=>{
+                          return(
+                            <option value={item._id}>{item.course_category_name}</option>
+                          )
+                        })
+                      }
+                    </Select>
+                    
                     <Input
                       size="lg"
                       margint="5px"
@@ -157,7 +185,7 @@ const UploadVideo = () => {
                       type="text"
                       height={"30px"}
                     />
-                  </form>
+                 </form>
                 </Stack>
               </ModalBody>
               <ModalFooter>
@@ -232,7 +260,6 @@ const UploadVideo = () => {
                 width={"100%"}
               >
                 {data.map((data) => {
-                  console.log(data.thumbnail);
                   return (
                     <Box
                       cursor={"pointer"}

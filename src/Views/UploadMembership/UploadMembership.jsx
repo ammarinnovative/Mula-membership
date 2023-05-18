@@ -23,12 +23,14 @@ import { useToast } from "@chakra-ui/react";
 import { POST, PUT } from "../../utilities/ApiProvider";
 import store from "../../app/store";
 import { useSelector } from "react-redux";
+import { baseURL } from "../../utilities/config";
 import { GET } from "../../utilities/ApiProvider";
 import { TailSpin } from "react-loader-spinner";
 import { Form, json, useParams } from "react-router-dom";
 import Item from "antd/es/list/Item";
 import { FaEdit } from "react-icons/fa";
 import { DELETE } from "../../utilities/ApiProvider";
+import { imageURL } from "../../utilities/config";
 import { MdDelete } from "react-icons/md";
 
 export default function UploadMember() {
@@ -43,56 +45,12 @@ export default function UploadMember() {
   const [catLoad, setCarLoad] = useState(false);
   const [updateId, setUpdateId] = useState({});
   const [toggle, setToggle] = useState(false);
-  const [selected,setSelected] = useState("");
-  const [FilterData,setFilerData] = useState([]);
-  const [selectedItem,setSelectedItem] = useState([]);
+  const [selected, setSelected] = useState("");
+  const [FilterData, setFilerData] = useState();
+  const [selectedItem, setSelectedItem] = useState([]);
+  const [videoItem, setVideoItem] = useState([]);
 
-
-
-  const objData = [
-    {
-      id: 1,
-      category: "Bitcoin",
-      name:"Bitcoin",
-      image:
-        "https://images.unsplash.com/photo-1609554496796-c345a5335ceb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8OHx8Y3J5cHRvfGVufDB8fDB8fA%3D%3D&w=1000&q=80",
-    },
-    {
-      id: 2,
-      category: "Bitcoin",
-      name:"Bitcoin",
-      image:
-        "https://images.unsplash.com/photo-1609554496796-c345a5335ceb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8OHx8Y3J5cHRvfGVufDB8fDB8fA%3D%3D&w=1000&q=80",
-    },
-    {
-      id: 3,
-      category: "Etherium",
-      name:"Etherium",
-      image:
-        "https://images.unsplash.com/photo-1620321023374-d1a68fbc720d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8ZXRoZXJldW18ZW58MHx8MHx8&w=1000&q=80",
-    },
-    {
-      id: 4,
-      category: "Etherium",
-      name:"Etherium",
-      image:
-        "https://images.unsplash.com/photo-1620321023374-d1a68fbc720d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8ZXRoZXJldW18ZW58MHx8MHx8&w=1000&q=80",
-    },
-    {
-      id: 5,
-      category: "Solana",
-      name:"Solana",
-      image:
-        "https://www.shutterstock.com/image-photo/munich-germany-january-17-2022-260nw-2108025368.jpg",
-    },
-    {
-      id: 6,
-      category: "Solana",
-      name:"Solana",
-      image:
-        "https://www.shutterstock.com/image-photo/munich-germany-january-17-2022-260nw-2108025368.jpg",
-    },
-  ];
+  
 
   const getCatagories = async () => {
     setCarLoad(true);
@@ -110,11 +68,14 @@ export default function UploadMember() {
     course_category_name: "",
   });
 
-  const category = [...new Set(objData.map((item) => item.category))];
+  const category = [
+    ...new Set(videoItem.map((item) => item.course_category_name)),
+  ];
 
   useEffect(() => {
     if (user) {
       getCatagories();
+      getVideoItem();
     }
   }, [user]);
 
@@ -143,6 +104,7 @@ export default function UploadMember() {
       });
       setLoading(false);
       getCatagories();
+      getVideoItem();
     } else {
       toast({
         status: "error",
@@ -180,6 +142,7 @@ export default function UploadMember() {
     } catch (error) {}
 
     getCatagories();
+    getVideoItem();
   };
 
   const uploadMembership = async () => {
@@ -258,32 +221,48 @@ export default function UploadMember() {
     }
 
     getCatagories();
+    getVideoItem();
     setToggle(false);
     setValue({ course_category_name: "" });
     setLoading(false);
   };
 
-  const getItem = (category)=>{
-    const catData = objData.filter((item)=>{return item.category == category});
+  const getItem = (category) => {
+    const catData = videoItem.filter((item) => {
+      return item.course_category_name == category;
+    });
     setSelected(category);
     setFilerData(catData);
+  };
 
-  }
+  const SelectedItem = (id) => {
+    debugger;
+    const items = selectedItem?.find((item) => {
+      return item._id == id;
+    });
+    if (items) {
+      //// unselect
+      setSelectedItem(
+        selectedItem.filter((item) => {
+          return item.id !== id;
+        })
+      );
+    } else {
+      /// select
+      const newItem = videoItem.find((item) => {
+        return item.id === id;
+      });
+      setSelectedItem([...selectedItem, newItem]);
+    }
+    
+  };
 
-  const SelectedItem = (id)=>{
-     const items = selectedItem?.find((item)=>{return item.id === id});
-   if(items){
-    //// unselect 
-    setSelectedItem(selectedItem.filter((item)=>{return item.id !== id}))
-      }
-   else{
-    /// select
-    const newItem = objData.find((item)=>{return item.id === id});
-    setSelectedItem([...selectedItem,newItem]);
-   }
-
-  }
-  console.log(selectedItem);
+  const getVideoItem = async () => {
+    const res = await GET(`video/admin`, {
+      authorization: `bearer ${user?.JWT_TOKEN}`,
+    });
+    setVideoItem(res.data);
+  };
 
   return (
     <Sidebar>
@@ -327,14 +306,28 @@ export default function UploadMember() {
               Upload Video
             </Heading>
           </Box>
-          <Box display={"flex"} justifyContent={"left"} alignItems={"center"} gap={"10px"}>
-            {
-              category.map((item)=>{
-                return(
-                  <Button onClick={()=>{getItem(item)}} backgroundColor={selected===item?"#1e2598":"none"}  color={selected===item?"white":"none"} border={"2px solid #1e2598"} _hover={"none"} >{item}</Button>
-                )
-              })
-            }
+          <Box
+            display={"flex"}
+            justifyContent={"left"}
+            flexWrap={"wrap"}
+            alignItems={"center"}
+            gap={"10px"}
+          >
+            {category.map((item) => {
+              return (
+                <Button
+                  onClick={() => {
+                    getItem(item);
+                  }}
+                  backgroundColor={selected === item ? "#1e2598" : "none"}
+                  color={selected === item ? "white" : "none"}
+                  border={"2px solid #1e2598"}
+                  _hover={"none"}
+                >
+                  {item}
+                </Button>
+              );
+            })}
           </Box>
           <Box
             display={"flex"}
@@ -343,20 +336,44 @@ export default function UploadMember() {
             gap={"10px"}
             alignItems={"center"}
           >
-            {FilterData?.map((item) => {
-              console.log(selectedItem.includes((items)=>{return items.id == item.id}));
-              return (
-                <Box cursor={"pointer"} onClick={()=>{SelectedItem(item.id)}} borderRadius={"10px"} mt={"20px"} p={"5px"} border={selectedItem.includes(item)?"2px solid pink":"none"} shadow={"md"} width={{ base: "100%", md: "42%", lg: "32%" }}>
-                  <Image
-                    width={"100%"}
-                    src={item.image}
-                    alt={item.name}
-                    shadow={"md"}
-                  />
-                  <Text fontSize={"20px"} mt={"5px"}>{item.name}</Text>
-                </Box>
-              );
-            })}
+            {FilterData &&
+              FilterData?.map((item) => {
+                // console.log(array.includes((items)=> {return items['id'] === item?.id}))
+                return (
+                  <>
+                    {item.video.map((data) => {
+                      return (
+                        <Box
+                          cursor={"pointer"}
+                          onClick={() => {
+                            SelectedItem(data._id);
+                          }}
+                          borderRadius={"10px"}
+                          mt={"20px"}
+                          p={"5px"}
+                          border={
+                            selectedItem.includes(item)
+                              ? "2px solid pink"
+                              : "none"
+                          }
+                          shadow={"md"}
+                          width={{ base: "100%", md: "42%", lg: "32%" }}
+                        >
+                          <Image
+                            width={"100%"}
+                            src={imageURL + data.thumbnail}
+                            alt={data.title}
+                            shadow={"md"}
+                          />
+                          <Text fontSize={"20px"} mt={"5px"}>
+                            {data.title}
+                          </Text>
+                        </Box>
+                      );
+                    })}
+                  </>
+                );
+              })}
           </Box>
           <Box>
             <Button
@@ -403,7 +420,9 @@ export default function UploadMember() {
               fontFamily={"poppins"}
               fontSize={{ base: "15px", md: "18px" }}
               mb={"10px"}
-            >Create Category</Text>
+            >
+              Create Category
+            </Text>
             <Box mt={"30px"} position={"relative"}>
               <Input
                 type={Text}
