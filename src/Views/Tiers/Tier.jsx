@@ -43,6 +43,8 @@ import ReactPaginate from "react-paginate";
 import { TailSpin } from "react-loader-spinner";
 import { Link } from "react-router-dom";
 export const Tiers = () => {
+
+  
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [data, setData] = useState("");
   const [feature, setFeature] = useState([]);

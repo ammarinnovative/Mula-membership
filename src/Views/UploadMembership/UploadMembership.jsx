@@ -40,9 +40,59 @@ export default function UploadMember() {
   const [data, setData] = useState([]);
   const [loadings, setLoadings] = useState(false);
   const params = useParams();
-  const [catLoad,setCarLoad] = useState(false);
-  const[updateId,setUpdateId] = useState({});
-  const [toggle,setToggle] = useState(false);
+  const [catLoad, setCarLoad] = useState(false);
+  const [updateId, setUpdateId] = useState({});
+  const [toggle, setToggle] = useState(false);
+  const [selected,setSelected] = useState("");
+  const [FilterData,setFilerData] = useState([]);
+  const [selectedItem,setSelectedItem] = useState([]);
+
+
+
+  const objData = [
+    {
+      id: 1,
+      category: "Bitcoin",
+      name:"Bitcoin",
+      image:
+        "https://images.unsplash.com/photo-1609554496796-c345a5335ceb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8OHx8Y3J5cHRvfGVufDB8fDB8fA%3D%3D&w=1000&q=80",
+    },
+    {
+      id: 2,
+      category: "Bitcoin",
+      name:"Bitcoin",
+      image:
+        "https://images.unsplash.com/photo-1609554496796-c345a5335ceb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8OHx8Y3J5cHRvfGVufDB8fDB8fA%3D%3D&w=1000&q=80",
+    },
+    {
+      id: 3,
+      category: "Etherium",
+      name:"Etherium",
+      image:
+        "https://images.unsplash.com/photo-1620321023374-d1a68fbc720d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8ZXRoZXJldW18ZW58MHx8MHx8&w=1000&q=80",
+    },
+    {
+      id: 4,
+      category: "Etherium",
+      name:"Etherium",
+      image:
+        "https://images.unsplash.com/photo-1620321023374-d1a68fbc720d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8ZXRoZXJldW18ZW58MHx8MHx8&w=1000&q=80",
+    },
+    {
+      id: 5,
+      category: "Solana",
+      name:"Solana",
+      image:
+        "https://www.shutterstock.com/image-photo/munich-germany-january-17-2022-260nw-2108025368.jpg",
+    },
+    {
+      id: 6,
+      category: "Solana",
+      name:"Solana",
+      image:
+        "https://www.shutterstock.com/image-photo/munich-germany-january-17-2022-260nw-2108025368.jpg",
+    },
+  ];
 
   const getCatagories = async () => {
     setCarLoad(true);
@@ -56,13 +106,11 @@ export default function UploadMember() {
     setCarLoad(false);
   };
 
-
   const [value, setValue] = useState({
     course_category_name: "",
   });
 
-
-
+  const category = [...new Set(objData.map((item) => item.category))];
 
   useEffect(() => {
     if (user) {
@@ -85,7 +133,6 @@ export default function UploadMember() {
     const res = await POST("courseCategory/addCourseCategoryDetail", value, {
       authorization: `bearer ${user.JWT_TOKEN}`,
     });
-    console.log(res);
     if (res.status == 200) {
       toast({
         status: "success",
@@ -96,8 +143,7 @@ export default function UploadMember() {
       });
       setLoading(false);
       getCatagories();
-    }
-    else{
+    } else {
       toast({
         status: "error",
         position: "bottom-left",
@@ -116,35 +162,25 @@ export default function UploadMember() {
     video: "63f9516b352a3cbh2ea6b8dc",
   });
 
-  
+  const deleteCat = async (_id) => {
+    const res = await DELETE(`courseCategory/delete/${_id}`, {
+      authorization: `bearer ${user.JWT_TOKEN}`,
+    });
 
+    try {
+      if (res.data.status == 200) {
+        toast({
+          status: "success",
+          description: "Deleted successfully",
+          isClosable: true,
+          position: "bottom-left",
+          duration: 5000,
+        });
+      }
+    } catch (error) {}
 
-const deleteCat =async (_id)=>{
-  
-  const res = await DELETE(`courseCategory/delete/${_id}`,{
-    authorization: `bearer ${user.JWT_TOKEN}`
-  });
-  console.log(res);
-
-  try {
-    if(res.data.status == 200){
-      toast({
-        status:"success",
-        description:"Deleted successfully",
-        isClosable:true,
-        position:"bottom-left",
-        duration:5000
-      })
-    }
-    
-  } catch (error) {
-    
-  }
-  
-  getCatagories();
-
-  
-}
+    getCatagories();
+  };
 
   const uploadMembership = async () => {
     setLoadings(true);
@@ -189,48 +225,66 @@ const deleteCat =async (_id)=>{
     setLoadings(false);
   };
 
-
-  const updateValue = (data)=>{
+  const updateValue = (data) => {
     setToggle(true);
     setUpdateId(data._id);
-    setValue({course_category_name:data?.course_category_name})
-  }
+    setValue({ course_category_name: data?.course_category_name });
+  };
 
-  const Updated = async ()=>{
+  const Updated = async () => {
     setLoading(true);
-    const res = await PUT(`courseCategory/update/${updateId}`,value,{
-      authorization: `bearer ${user.JWT_TOKEN}`
-    })
-    console.log(res);
+    const res = await PUT(`courseCategory/update/${updateId}`, value, {
+      authorization: `bearer ${user.JWT_TOKEN}`,
+    });
 
     try {
-      if(res.status==200){
+      if (res.status == 200) {
         toast({
-          position:"bottom-left",
-          status:"success",
-          description:"Category Updated",
-          isClosable:true,
-          duration:5000
-        })
+          position: "bottom-left",
+          status: "success",
+          description: "Category Updated",
+          isClosable: true,
+          duration: 5000,
+        });
       }
     } catch (error) {
       toast({
-        position:"bottom-left",
-        duration:5000,
-        status:"success",
-        isClosable:true,
-        description:res.data.error
-      })
+        position: "bottom-left",
+        duration: 5000,
+        status: "success",
+        isClosable: true,
+        description: res.data.error,
+      });
     }
 
     getCatagories();
     setToggle(false);
-    setValue({course_category_name:""})
-    setLoading(false)
-  
+    setValue({ course_category_name: "" });
+    setLoading(false);
+  };
+
+  const getItem = (category)=>{
+    const catData = objData.filter((item)=>{return item.category == category});
+    setSelected(category);
+    setFilerData(catData);
+
   }
-  
-  
+
+  const SelectedItem = (id)=>{
+     const items = selectedItem?.find((item)=>{return item.id === id});
+   if(items){
+    //// unselect 
+    setSelectedItem(selectedItem.filter((item)=>{return item.id !== id}))
+      }
+   else{
+    /// select
+    const newItem = objData.find((item)=>{return item.id === id});
+    setSelectedItem([...selectedItem,newItem]);
+   }
+
+  }
+  console.log(selectedItem);
+
   return (
     <Sidebar>
       <Flex
@@ -273,31 +327,36 @@ const deleteCat =async (_id)=>{
               Upload Video
             </Heading>
           </Box>
-          <Box>
-            <Input
-              type={"file"}
-              // onChange={(e) => {
-              //   setFields({...fields,video:e.target.files[0]});
-              // }}
-              display={"none"}
-              id={"file"}
-            ></Input>
-            <label htmlFor="file">
-              <Stack
-                padding={"30px 50px"}
-                bg={"#ececec"}
-                border={"1px Dashed #000"}
-                borderRadius={"10px"}
-                cursor={"pointer"}
-                spacing="2"
-                alignItems={"center"}
-                width={"30%"}
-                w={{ base: "100%", md: "35%", lg: "", "2xl": "" }}
-              >
-                <AiOutlineUpload fontSize={"50px"} />
-                <Text>upload Video</Text>
-              </Stack>
-            </label>
+          <Box display={"flex"} justifyContent={"left"} alignItems={"center"} gap={"10px"}>
+            {
+              category.map((item)=>{
+                return(
+                  <Button onClick={()=>{getItem(item)}} backgroundColor={selected===item?"#1e2598":"none"}  color={selected===item?"white":"none"} border={"2px solid #1e2598"} _hover={"none"} >{item}</Button>
+                )
+              })
+            }
+          </Box>
+          <Box
+            display={"flex"}
+            flexWrap={"wrap"}
+            justifyContent={"left"}
+            gap={"10px"}
+            alignItems={"center"}
+          >
+            {FilterData?.map((item) => {
+              console.log(selectedItem.includes((items)=>{return items.id == item.id}));
+              return (
+                <Box cursor={"pointer"} onClick={()=>{SelectedItem(item.id)}} borderRadius={"10px"} mt={"20px"} p={"5px"} border={selectedItem.includes(item)?"2px solid pink":"none"} shadow={"md"} width={{ base: "100%", md: "42%", lg: "32%" }}>
+                  <Image
+                    width={"100%"}
+                    src={item.image}
+                    alt={item.name}
+                    shadow={"md"}
+                  />
+                  <Text fontSize={"20px"} mt={"5px"}>{item.name}</Text>
+                </Box>
+              );
+            })}
           </Box>
           <Box>
             <Button
@@ -344,9 +403,7 @@ const deleteCat =async (_id)=>{
               fontFamily={"poppins"}
               fontSize={{ base: "15px", md: "18px" }}
               mb={"10px"}
-            >
-            
-            </Text>
+            >Create Category</Text>
             <Box mt={"30px"} position={"relative"}>
               <Input
                 type={Text}
@@ -362,113 +419,118 @@ const deleteCat =async (_id)=>{
                 _placeholder={{ color: "#fff" }}
               />
               <Box position={"absolute"} right={"8px"} top={"8px"}>
-                {
-                  toggle?<Button
-                  h={"35px"}
-                  onClick={Updated}
-                  border={"1px solid #fff"}
-                  cursor={"pointer"}
-                  _hover={{
-                    bg: "transparent",
-                    border: "1px solid #fff",
-                    color: "#fff",
-                    transition: "all 0.5s",
-                  }}
-                >
-                  {loading ? (
-                    <TailSpin
-                      height="20"
-                      width="20"
-                      color="blue"
-                      ariaLabel="tail-spin-loading"
-                      radius="1"
-                      wrapperStyle={{}}
-                      wrapperClass=""
-                      visible={true}
-                    />
-                  ) : (
-                    "Update"
-                  )}
-                </Button>:<Button
-                  h={"35px"}
-                  onClick={createCat}
-                  border={"1px solid #fff"}
-                  cursor={"pointer"}
-                  _hover={{
-                    bg: "transparent",
-                    border: "1px solid #fff",
-                    color: "#fff",
-                    transition: "all 0.5s",
-                  }}
-                >
-                  {loading ? (
-                    <TailSpin
-                      height="20"
-                      width="20"
-                      color="blue"
-                      ariaLabel="tail-spin-loading"
-                      radius="1"
-                      wrapperStyle={{}}
-                      wrapperClass=""
-                      visible={true}
-                    />
-                  ) : (
-                    "Create"
-                  )}
-                </Button>
-                }
+                {toggle ? (
+                  <Button
+                    h={"35px"}
+                    onClick={Updated}
+                    border={"1px solid #fff"}
+                    cursor={"pointer"}
+                    _hover={{
+                      bg: "transparent",
+                      border: "1px solid #fff",
+                      color: "#fff",
+                      transition: "all 0.5s",
+                    }}
+                  >
+                    {loading ? (
+                      <TailSpin
+                        height="20"
+                        width="20"
+                        color="blue"
+                        ariaLabel="tail-spin-loading"
+                        radius="1"
+                        wrapperStyle={{}}
+                        wrapperClass=""
+                        visible={true}
+                      />
+                    ) : (
+                      "Update"
+                    )}
+                  </Button>
+                ) : (
+                  <Button
+                    h={"35px"}
+                    onClick={createCat}
+                    border={"1px solid #fff"}
+                    cursor={"pointer"}
+                    _hover={{
+                      bg: "transparent",
+                      border: "1px solid #fff",
+                      color: "#fff",
+                      transition: "all 0.5s",
+                    }}
+                  >
+                    {loading ? (
+                      <TailSpin
+                        height="20"
+                        width="20"
+                        color="blue"
+                        ariaLabel="tail-spin-loading"
+                        radius="1"
+                        wrapperStyle={{}}
+                        wrapperClass=""
+                        visible={true}
+                      />
+                    ) : (
+                      "Create"
+                    )}
+                  </Button>
+                )}
               </Box>
             </Box>
           </Box>
           <Box>
             <Text fontSize={"20px"} fontWeight={"bold"}>
-            {
-              catagories.length>0? "Created Categories":"No Categories found"
-             }
+              {catagories.length > 0
+                ? "Created Categories"
+                : "No Categories found"}
             </Text>
-            {
-              catLoad?<Box>Loading....</Box>:catagories?.map((data)=>{
-                return(
-                  
-             <Box
-              display={"flex"}
-              padding={"10px"}
-              gap={"5px"}
-              justifyContent={"space-between"}
-              alignItems={"center"}
-              marginBottom={"10px"}
-              border={"1px solid gray"}
-              borderRadius={"5px"}
-            >
-              <Text>{data.course_category_name}</Text>
-              <Box display={"flex"} alignItems={"center"} gap={"8px"}>
-                <Box
-                  display={"flex"}
-                  gap={"5px"}
-                  cursor={"pointer"}
-                  alignItems={"center"}
-                  onClick={()=>{updateValue(data)}}
-                >
-                  <FaEdit fontSize={"20px"} />
-                  <Text>Edit</Text>
-                </Box>
-                <Box
-                  display={"flex"}
-                  gap={"5px"}
-                  cursor={"pointer"}
-                  alignItems={"center"}
-                  onClick={()=>{deleteCat(data._id)}}
-
-                >
-                  <MdDelete fontSize={"20px"} />
-                  <Text>Delete</Text>
-                </Box>
-              </Box>
-            </Box>
-                )
+            {catLoad ? (
+              <Box>Loading....</Box>
+            ) : (
+              catagories?.map((data) => {
+                return (
+                  <Box
+                    display={"flex"}
+                    padding={"10px"}
+                    gap={"5px"}
+                    justifyContent={"space-between"}
+                    alignItems={"center"}
+                    marginBottom={"10px"}
+                    border={"1px solid gray"}
+                    borderRadius={"5px"}
+                  >
+                    <Text>{data.course_category_name}</Text>
+                    <Box display={"flex"} alignItems={"center"} gap={"8px"}>
+                      <Box
+                        display={"flex"}
+                        gap={"5px"}
+                        cursor={"pointer"}
+                        alignItems={"center"}
+                        onClick={() => {
+                          updateValue(data);
+                        }}
+                      >
+                        <FaEdit fontSize={"20px"} />
+                        <Text>Edit</Text>
+                      </Box>
+                      <Box
+                        display={"flex"}
+                        gap={"5px"}
+                        cursor={"pointer"}
+                        alignItems={"center"}
+                        onClick={() => {
+                          deleteCat(data._id);
+                        }}
+                      >
+                        <MdDelete fontSize={"20px"} />
+                        <Text>Delete</Text>
+                      </Box>
+                    </Box>
+                  </Box>
+                );
               })
-            }
-           
+            )}
           </Box>
         </Stack>
       </Flex>
