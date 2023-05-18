@@ -15,11 +15,13 @@ function App() {
   useEffect(() => {
     (async () => {
       if (localStorage.getItem("user") !== null) {
-        let user = JSON.parse(localStorage.getItem("user") ?? "{}");
+        let user = JSON.parse(localStorage.getItem("user") ?? null);
         dispatch(addUser(user));
       } else if (Cookies.get("user") !== undefined) {
-        let user = JSON.parse(Cookies.get("user") ?? "{}");
+        let user = JSON.parse(Cookies.get("user") ?? null);
         dispatch(addUser(user));
+      }else{
+        dispatch(addUser(null));
       }
     })();
   }, []);
