@@ -47,7 +47,7 @@ export default function UploadMember() {
   const [toggle, setToggle] = useState(false);
   const [selected, setSelected] = useState("");
   const [FilterData, setFilerData] = useState();
-  const [selectedItem, setSelectedItem] = useState([]);
+  const [selectedItem, setSelectedItem] = useState({playlist:[]});
   const [videoItem, setVideoItem] = useState([]);
 
   
@@ -235,27 +235,25 @@ export default function UploadMember() {
     setFilerData(catData);
   };
 
-  const SelectedItem = (id) => {
-    debugger;
-    const items = selectedItem?.find((item) => {
-      return item._id == id;
+  const SelectedItem = (Item) => {
+    
+    const items = selectedItem.playlist.find((item) => {
+      return item.video == Item._id;
     });
-    if (items) {
-      //// unselect
-      setSelectedItem(
-        selectedItem.filter((item) => {
-          return item.id !== id;
-        })
-      );
-    } else {
-      /// select
-      const newItem = videoItem.find((item) => {
-        return item.id === id;
-      });
-      setSelectedItem([...selectedItem, newItem]);
+    
+    if(items){
+      setSelectedItem({playlist:selectedItem.playlist.filter((data)=>data.video !== Item._id)})
     }
+    else{
+      setSelectedItem({playlist:[...selectedItem.playlist,{video:Item._id}]})
+    }
+   
     
   };
+  
+  console.log(selectedItem)
+  
+
 
   const getVideoItem = async () => {
     const res = await GET(`video/admin`, {
@@ -346,16 +344,11 @@ export default function UploadMember() {
                         <Box
                           cursor={"pointer"}
                           onClick={() => {
-                            SelectedItem(data._id);
+                            SelectedItem(data);
                           }}
                           borderRadius={"10px"}
                           mt={"20px"}
                           p={"5px"}
-                          border={
-                            selectedItem.includes(item)
-                              ? "2px solid pink"
-                              : "none"
-                          }
                           shadow={"md"}
                           width={{ base: "100%", md: "42%", lg: "32%" }}
                         >
