@@ -47,6 +47,7 @@ export default function UploadMember() {
   const [toggle, setToggle] = useState(false);
   const [selected, setSelected] = useState("");
   const [FilterData, setFilerData] = useState();
+  const [videoLoad,setVideoLoad] = useState(false);
   const [selectedItem, setSelectedItem] = useState({playlist:[]});
   const [videoItem, setVideoItem] = useState([]);
 
@@ -145,48 +146,48 @@ export default function UploadMember() {
     getVideoItem();
   };
 
-  const uploadMembership = async () => {
-    setLoadings(true);
-    if (fields.category.length == 0 || !fields.video) {
-      toast({
-        description: "Please fill all the fields",
-        status: "error",
-        isClosable: true,
-        position: "bottom-left",
-        duration: 3000,
-      });
-      setLoadings(false);
-      return;
-    }
+  // const uploadMembership = async () => {
+  //   setLoadings(true);
+  //   if (fields.category.length == 0 || !fields.video) {
+  //     toast({
+  //       description: "Please fill all the fields",
+  //       status: "error",
+  //       isClosable: true,
+  //       position: "bottom-left",
+  //       duration: 3000,
+  //     });
+  //     setLoadings(false);
+  //     return;
+  //   }
 
-    const jsonFields = JSON.stringify(fields);
-    debugger;
-    const res = await POST(`membership/playlist/${params.id}`, jsonFields, {
-      authorization: `Bearer ${user.JWT_TOKEN}`,
-    });
+  //   const jsonFields = JSON.stringify(fields);
+  //   debugger;
+  //   const res = await POST(`membership/playlist/${params.id}`, jsonFields, {
+  //     authorization: `Bearer ${user.JWT_TOKEN}`,
+  //   });
 
-    try {
-      if (res.status == 200) {
-        toast({
-          description: res.data.message,
-          status: "success",
-          isClosable: true,
-          position: "bottom-left",
-          duration: 3000,
-        });
-      } else {
-        toast({
-          description: res.data.error,
-          status: "error",
-          isClosable: true,
-          position: "bottom-left",
-          duration: 3000,
-        });
-      }
-    } catch (error) {}
+  //   try {
+  //     if (res.status == 200) {
+  //       toast({
+  //         description: res.data.message,
+  //         status: "success",
+  //         isClosable: true,
+  //         position: "bottom-left",
+  //         duration: 3000,
+  //       });
+  //     } else {
+  //       toast({
+  //         description: res.data.error,
+  //         status: "error",
+  //         isClosable: true,
+  //         position: "bottom-left",
+  //         duration: 3000,
+  //       });
+  //     }
+  //   } catch (error) {}
 
-    setLoadings(false);
-  };
+  //   setLoadings(false);
+  // };
 
   const updateValue = (data) => {
     setToggle(true);
@@ -261,6 +262,49 @@ export default function UploadMember() {
     });
     setVideoItem(res.data);
   };
+  
+
+
+  const UploadVideos = async ()=>{
+    setVideoLoad(true);
+    if(selectedItem.playlist.length<=0){
+      toast({
+        position:"bottom-left",
+        status:"error",
+        duration:5000,
+        isClosable:true,
+        description:"Please seclect any video"
+      });
+      setVideoLoad(false);
+      return;
+    }
+    const JsonItem = JSON.stringify(selectedItem);
+    
+      const res = await POST(`membership/playlist/${params.id}`,JsonItem,{
+        authorization: `bearer ${user?.JWT_TOKEN}`
+      });
+     if(res.status ==200){
+      toast({
+        status:"success",
+        position:"bottom-left",
+        duration:5000,
+        isClosable:true,
+        description:res.data.message
+      })
+     }
+     else{
+      toast({
+        position:"bottom-left",
+        status:"error",
+        isClosable:true,
+        duration:5000,
+        description:res.data.error
+      })
+     }
+
+     setSelectedItem({playlist:[]});
+    setVideoLoad(false)
+  }
 
   return (
     <Sidebar>
@@ -270,35 +314,7 @@ export default function UploadMember() {
         textAlign={{ base: "center", md: "left", lg: "", "2xl": "" }}
       >
         <Stack flex={"2"}>
-          {/* input filed */}
-          <Box>
-            <Select
-              value={fields.category}
-              onChange={(e) => {
-                setFields({ ...fields, category: [e.target.value] });
-              }}
-              placeholder="Crypto"
-              mt={"15px"}
-              border={"1px solid #000"}
-              _placeholder={{ color: "#867878", fontWeight: "bold" }}
-            >
-              {catagories.map((Item) => {
-                return (
-                  <option value={Item._id}>{Item.course_category_name}</option>
-                );
-              })}
-            </Select>
-
-            <Input
-              value={fields.price}
-              type={Text}
-              mt={"15px"}
-              border={"1px solid #000"}
-              placeholder="$25.00"
-              _placeholder={{ color: "#867878" }}
-            />
-          </Box>
-
+          
           <Box>
             <Heading as="h2" size="md" mt={"30px"} mb={"20px"}>
               Upload Video
@@ -370,7 +386,7 @@ export default function UploadMember() {
           </Box>
           <Box>
             <Button
-              onClick={uploadMembership}
+              onClick={UploadVideos}
               width={{ base: "100%", md: "100%", lg: "20%" }}
               marginTop={"30px"}
               marginBottom={"30px"}
@@ -386,7 +402,7 @@ export default function UploadMember() {
                 border: "1px solid #000",
               }}
             >
-              {loadings ? (
+              {videoLoad ? (
                 <TailSpin
                   height="20"
                   width="20"
