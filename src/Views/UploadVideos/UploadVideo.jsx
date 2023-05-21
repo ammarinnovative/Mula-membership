@@ -27,13 +27,6 @@ import {
   FormLabel,
 } from "@chakra-ui/react";
 import Sidebar from "../../Components/Sidebar/Sidebar";
-import Img1 from "../../Assets/Images/Courses/course1.jpg";
-import Img2 from "../../Assets/Images/Courses/course2.jpg";
-import Img3 from "../../Assets/Images/Courses/course3.jpg";
-import Img4 from "../../Assets/Images/Courses/Image4.jpg";
-import Img5 from "../../Assets/Images/Courses/image5.jpg";
-import Img6 from "../../Assets/Images/Courses/Image6.jpg";
-import Img7 from "../../Assets/Images/Courses/Image7.jpg";
 import { POST, Post } from "../../utilities/ApiProvider";
 import { Input } from "antd";
 import { useEffect, useRef, useState } from "react";
@@ -53,15 +46,36 @@ const UploadVideo = () => {
   const [Category, setCategory] = useState([]);
   const [user, setUser] = useState(null);
   const [catVal,setCatVal] = useState([]);
-  // const token = selector.user.user.data.data.JWT_TOKEN;
+  const [fields,setFields] = useState(
+    {
+      title:"",
+      thumbnail:null,
+      video:null,
+      privatePath:"",
+      category:[]
+    }
+    );
+    console.log(fields)
   const Upload = async () => {
     setState(true);
-    const data = document.getElementById("form");
-    const formData = new FormData(data);
+    if(!fields.title || !fields.thumbnail || !fields.video || !fields.privatePath || !fields.privatePath){
+      toast({
+        position:"bottom-left",
+        status:"error",
+        isClosable:"true",
+        duration:5000,
+        description:"please fill all the fields to proceed further"
+      });
+      setState(false);
+      return;
+    }
+    const formData = new FormData();
+    for(let key in fields){
+      formData.append(key,fields[key])
+    }
     const res = await POST("video", formData, {
       authorization: `bearer ${user?.JWT_TOKEN}`,
     });
-    console.log(res);
     if (res.status == 200) {
       toast({
         title: res.data.message,
@@ -80,10 +94,11 @@ const UploadVideo = () => {
         duration: "5000",
         isClosable: true,
       });
+      setState(false);
     }
 
     getVides();
-  };
+  };  
 
   const getVides = async () => {
     setLoading(true);
@@ -118,7 +133,8 @@ const UploadVideo = () => {
     }
   }, [user]);
 
-  console.log(catVal);
+
+
 
   return (
     <Box>
@@ -141,6 +157,7 @@ const UploadVideo = () => {
                     <Input
                       name="title"
                       size="lg"
+                      onChange={(e)=>{setFields({...fields,title:e.target.value})}}
                       margin="5px"
                       placeholder="Title"
                       type="text"
@@ -151,6 +168,7 @@ const UploadVideo = () => {
                       <Input
                         size="lg"
                         name="thumbnail"
+                        onChange={(e)=>{setFields({...fields,thumbnail:e.target.files[0]})}}
                         placeholder="thumbnail"
                         type="file"
                         height={"30px"}
@@ -161,13 +179,14 @@ const UploadVideo = () => {
                       <Input
                         size="lg"
                         placeholder="Video"
+                        onChange={(e)=>{setFields({...fields,video:e.target.files[0]})}}
                         name="video"
                         type="file"
                         accept="video/*"
                         height={"30px"}
                       />
                     </FormControl>
-                    <Select value={catVal} name="category" onChange={(e)=>{setCatVal([e.target.value])}} placeholder="Select option">
+                    <Select  margin={"10px 0"} name="category" onChange={(e)=>{setFields({...fields,category:[e.target.value]})}} placeholder="Select option">
                       {
                         Category.map((item)=>{
                           return(
@@ -183,6 +202,7 @@ const UploadVideo = () => {
                       name="privatePath"
                       placeholder="Enter the URL"
                       type="text"
+                      onChange={(e)=>{setFields({...fields,privatePath:e.target.value})}}
                       height={"30px"}
                     />
                  </form>
@@ -257,12 +277,16 @@ const UploadVideo = () => {
               <Flex
                 justifyContent={{ base: "center", md: "space-between" }}
                 flexWrap={"wrap"}
+                gap={"15px"}
                 width={"100%"}
               >
                 {data.map((data) => {
                   return (
                     <Box
                       cursor={"pointer"}
+                      backgroundColor={"white"}
+                      borderRadius={"8px"}
+                      padding={"10px"}
                       width={{ base: "80%", md: "40%", lg: "30%" }}
                     >
                       <Image
