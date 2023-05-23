@@ -32,12 +32,13 @@ import {
 } from "@chakra-ui/react";
 import { imageURL } from "../../utilities/config";
 import { TailSpin } from "react-loader-spinner";
+import Detail from "../DetailsCard/Detail";
 const Subcribers = () => {
   const [member, setMember] = useState([]);
   const [user, setUser] = useState();
   const params = useParams();
   const [loading,setLoading] = useState(true);
-
+  const [details,setDetails] = useState();
   const getSubscriber = async () => {
     setLoading(true);
     const res = await GET(`membership/${params.id}/subscriptions`, {
@@ -63,10 +64,13 @@ const Subcribers = () => {
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
+
+
   const getItem = (Item) => {
-    console.log(Item);
+    setDetails(Item);
     onOpen();
   };
+
 
   return (
     <Sidebar>
@@ -172,15 +176,15 @@ const Subcribers = () => {
             <Box display={"flex"}  flexDirection={{base:"column",md:"row"}} gap={"20px"} flexWrap={"wrap"} justifyContent={"space-between"}>
               <Box width={"40%"}>
                 <Text fontWeight={"bold"}>Name</Text>
-                <Text>Ammar</Text>
+                <Text>{details?.full_name ?? "loading"}</Text>
               </Box>
               <Box width={"40%"}>
                 <Text fontWeight={"bold"}>Email</Text>
-                <Text>ammar@gmail.com</Text>
+                <Text>{details?.email??"loading"}</Text>
               </Box>
               <Box width={"40%"}>
                 <Text fontWeight={"bold"}>Phone Number</Text>
-                <Text>3232322</Text>
+                <Text>{details?.phone_number??"loading"}</Text>
               </Box>
             </Box>
           </ModalBody>

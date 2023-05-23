@@ -31,6 +31,7 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FiEdit } from "react-icons/fi";
 import axios from "axios";
+import { TailSpin } from "react-loader-spinner";
 import { POST } from "../../utilities/ApiProvider";
 import { Navigate, useNavigate } from "react-router-dom";
 import { addUser } from "../../reducers/UserReducer";
@@ -43,22 +44,25 @@ export const LoginPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const [toggle,setToggle] = useState(false);
   const [Fields, setFields] = useState({
     email: "",
     password: "",
   });
 
   const submitForm = async () => {
-    const res = await POST("admin/login", Fields);
-    console.log(res)
+    setToggle(true);
+    const res = await POST("users/admin/login", Fields);
+    console.log(res);
     if (res.status == 200) {
       toast({
         description: res.data.message,
         status: "success",
         isClosable: true,
         position: "bottom-left",
-        duration: 2500,
+        duration: 5000,
       });
+      setToggle(false);
       dispatch(addUser(res));
       navigate("/");
     } else {
@@ -69,11 +73,12 @@ export const LoginPage = () => {
         position: "bottom-left",
         duration: 5000,
       });
+      setToggle(false);
     }
+    setToggle(false);
   };
 
   const selector = useSelector((store) => store);
-  console.log(selector);
   const [show, setShow] = useState(false);
   return (
     <Box
@@ -152,7 +157,19 @@ export const LoginPage = () => {
               </InputGroup>
             </FormControl>
             <Button width={"100%"} onClick={submitForm} colorScheme={"blue"}>
-              Submit
+            {
+              toggle?<TailSpin
+              // height="20"
+              width="30"
+              color="white"
+              ariaLabel="tail-spin-loading"
+              radius="1"
+              wrapperStyle={{}}
+              wrapperClass=""
+              visible={true}
+            />:"Login"
+            }
+              
             </Button>
           </VStack>
         </Container>

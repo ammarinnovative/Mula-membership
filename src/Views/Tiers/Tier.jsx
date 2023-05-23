@@ -17,6 +17,7 @@ import {
   Button,
   useDisclosure,
   Stack,
+  useToast,
 } from "@chakra-ui/react";
 import Sidebar from "../../Components/Sidebar/Sidebar";
 import { SmallAddIcon } from "@chakra-ui/icons";
@@ -51,6 +52,7 @@ export const Tiers = () => {
   const [feature, setFeature] = useState([]);
   const [MembershipPlan, setMembershipPlan] = useState([]);
   const [catData, setCatData] = useState([]);
+  const [toggle,setToggle] = useState(false);
   const [loading, setLoading] = useState(false);
   const selector = useSelector((state) => state);
   const [user, setUser] = useState(null);
@@ -115,6 +117,8 @@ export const Tiers = () => {
         zoomConferance: false,
         announcements: false,
         directMessage: false,
+        chatRoom:null
+
       },
     ],
   });
@@ -136,8 +140,16 @@ export const Tiers = () => {
     setFields({ ...fields, access_levels: [newAccessLevels] });
   }
 
+  const toast = useToast();
+
+
+
+
   const postdata = async () => {
-    setLoading(true);
+    
+    
+    
+    setToggle(true);
     const object = {
       ...fields,
       category: JSON.stringify(fields.category),
@@ -151,12 +163,33 @@ export const Tiers = () => {
     }
 
     // formData.forEach((element) => {
+    //   console.log(element);
     // });
 
     const res = await POST("membership", formData, {
       authorization: `bearer ${user?.JWT_TOKEN}`,
     });
-    setLoading(false);
+    if(res.status==200){
+      toast({
+        position:"bottom-left",
+        isClosable:true,
+        status:"success",
+        duration:5000,
+        description:res.data.message
+      })
+      getMembershipPlan();
+    }
+    else{
+      toast({
+        position:"bottom-left",
+        isClosable:true,
+        status:"error",
+        duration:5000,
+        description:res.data.message
+      })
+    }
+    console.log(res);
+    setToggle(false);
   };
 
   // const changePage = ({ selected }) => {
@@ -199,6 +232,7 @@ export const Tiers = () => {
               px={"30px"}
               bg={"#1e2598"}
               onClick={postdata}
+              _hover={"none"}
             >
               Create
             </Button>
@@ -275,7 +309,7 @@ export const Tiers = () => {
                   onChange={(e) => {
                     setFields({
                       ...fields,
-                      category: JSON.stringify([e.target.value]),
+                      category: [e.target.value],
                     });
                   }}
                   placeholder="Crypto"
@@ -416,16 +450,16 @@ export const Tiers = () => {
                       display={"flex"}
                       alignItems={"center"}
                       width={"100%"}
-                      flexDirection={{base:"column-reverse",md:"row"}}
+                      flexDirection={{base:"column-reverse",md:"column-reverse",lg:"row"}}
                       justifyContent={"space-between"}
                     >
-                      <Text>{item.name}</Text>
-                      <Box display={"flex"} flexDirection={{base:"column",md:"row"}}>
+                      <Text >{item.name}</Text>
+                      <Box display={"flex"} width={"100%"} justifyContent={{base:"center",md:"center",lg:"right"}} flexDirection={{base:"column",md:"column",lg:"row"}}>
                       <Button
                         border={"1px solid #1e2598"}
                         px={"30px"}
                         color={"#1e2598"}
-                        width={{base:"100%",md:"100%"}}
+                        width={{base:"100%",md:"100%",lg:"20%"}}
                       >
                         Edit
                       </Button>
@@ -433,6 +467,7 @@ export const Tiers = () => {
                       <Button
                         border={"1px solid #1e2598"}
                         px={"10px"}
+                        width={{base:"100%",md:"100%"}}
                         color={"#1e2598"}
                       >
                         Subscribers
