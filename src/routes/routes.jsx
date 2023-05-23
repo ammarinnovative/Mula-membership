@@ -13,6 +13,7 @@ import MeetingSchedule from '../Views/ZoomMeeting/MeetingSchedule'
 import UploadMember from "../Views/UploadMembership/UploadMembership";
 import UploadVideo from '../Views/UploadVideos/UploadVideo';
 import ChatRoom from '../Views/ChatRoom/ChatRoom';
+import  Subscriber  from '../Components/Subscribers/Subcribers';
 
 export const Router = ()=>{
     return(
@@ -32,6 +33,7 @@ export const Router = ()=>{
             <Route path="/dashboard/UploadMembershipVideos/:id" element={<UploadMember />}/>
             <Route path="/dashboard/UploadVideo" element={<UploadVideo />}/>
             <Route path="/dashboard/ChatRoom" element={<ChatRoom />}/>
+            <Route path="/dashboard/subscribers/:id" element={<Subscriber />}/>
         </Routes>
     </Main>
 </Box>

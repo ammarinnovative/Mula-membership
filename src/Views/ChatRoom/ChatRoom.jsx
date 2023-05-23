@@ -9,9 +9,10 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { Button, Checkbox, Input, Select } from "antd";
-import { GET, PUT } from "../../utilities/ApiProvider";
+import { DELETE, GET, PUT } from "../../utilities/ApiProvider";
 import { POST } from "../../utilities/ApiProvider";
 import { useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
 import { FaBeer, FaEdit } from 'react-icons/fa';
 import { TailSpin } from "react-loader-spinner";
 import {
@@ -36,6 +37,7 @@ function ChatRoom() {
   const [loading,setLoading] = useState(false);
   const [toggle,setToggle] = useState(false);
   const [dataId,setDataId] = useState("");
+  const params = useParams();
 
   const toast = useToast();
   const getCat = async () => {
@@ -110,11 +112,37 @@ function ChatRoom() {
     setLoading(false)
   };
 
+  const DeleteChatRoom =async (id)=>{
+    try {
+      const res = await DELETE(`chatroom/${id}`);
+      if(res.status==200){
+        toast({
+          position:"bottom-left",
+          isClosable:true,
+          duration:5000,
+          status:"success",
+          description:res.data.message
+        })
+        getChat();
+      }
+    } catch (error) {
+      console.log(error)
+      toast({
+        position:"bottom-left",
+        isClosable:true,
+        status:"error",
+        duration:5000,
+        description:error.data.meesage
+      })
+    }
+    
+  }
+
+ 
   useEffect(() => {
     if (user) {
       getCat();
       getChat();
-      console.log(chatData);
     }
   }, [user]);
   useEffect(() => {}, [fields]);
@@ -136,7 +164,6 @@ function ChatRoom() {
 
     })
   }
-  console.log(fields)
   const updateData = async ()=>{
     const res = await PUT(`chatroom/${dataId}`,fields,{
       authorization: `bearer ${user.JWT_TOKEN}`
@@ -257,7 +284,7 @@ function ChatRoom() {
                    <Td>{item.details}</Td>
                    <Td>{item.category}</Td>
                    <Td onClick={()=>{update(item)}} fontSize={"20px"} cursor={"pointer"}><FaEdit /></Td>
-                   <Td fontSize={"20px"} cursor={"pointer"}><MdDelete /></Td>
+                   <Td onClick={()=>{DeleteChatRoom(item._id)}} fontSize={"20px"} cursor={"pointer"}><MdDelete /></Td>
                  </Tr>
                );
              })

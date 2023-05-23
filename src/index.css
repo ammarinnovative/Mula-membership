@@ -27,3 +27,13 @@ body{
 .items {
   margin-bottom: 1rem;
 }
+.pagi{
+  display: flex;
+  list-style: none;
+  gap: 10px;
+}
+.pagi li {
+  padding: 7px;
+  border:2px solid rgb(71, 71, 182);
+  cursor: pointer;
+}

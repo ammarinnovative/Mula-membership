@@ -40,6 +40,7 @@ import { POST } from "../../utilities/ApiProvider";
 import Item from "antd/es/list/Item";
 import ChatRoomList from "./ChatRoomList";
 import ReactPaginate from "react-paginate";
+import Pagination from "../../Components/Pagination/Pagination";
 import { TailSpin } from "react-loader-spinner";
 import { Link } from "react-router-dom";
 export const Tiers = () => {
@@ -56,6 +57,9 @@ export const Tiers = () => {
   const [pageCount, setPageCount] = useState(0);
   const [pageNumber, setPageNumber] = useState(1);
   const [stateLoad, setStateLoad] = useState(false);
+  const [page,setPage] = useState(1);
+  const [totalPage,setTotalPage]=useState(1);
+  const [totalRecords,setTotalRecords] = useState();
   // const [loading,setLoading] = useState(false);
   // const [membershipData, setmembershipData] = useState([]);
 
@@ -71,11 +75,12 @@ export const Tiers = () => {
 
   const getMembershipPlan = async () => {
     setStateLoad(true);
-    const res = await GET("membership?limit=23&page=", {
+    const res = await GET(`membership?limit=3&page=${page}`, {
       authorization: `bearer ${user?.JWT_TOKEN}`,
     });
-    console.log(res);
     setMembershipPlan(res?.data);
+    setTotalPage(res.totalPages.page);
+    setTotalRecords(res.totalPages.totalRecords)
     setStateLoad(false);
   };
   
@@ -90,7 +95,7 @@ export const Tiers = () => {
     if(user){
       getMembershipPlan();
     }
-  }, [user]);
+  }, [user,page]);
 
   useEffect(() => {
     if (user) {
@@ -154,10 +159,17 @@ export const Tiers = () => {
     setLoading(false);
   };
 
-  const changePage = ({ selected }) => {
-    setPageNumber(selected);
-    console.log(selected);
-  };
+  // const changePage = ({ selected }) => {
+  //   setPageNumber(selected);
+  //   console.log(selected);
+  // };
+
+
+  const getPage = (item)=>{
+    setPage(item);
+  }
+
+
   return (
     <Sidebar>
       <Modal
@@ -400,22 +412,35 @@ export const Tiers = () => {
                     key={item._id}
                     alignSelf={"normal"}
                   >
-                    <Link to={`/dashboard/UploadMembershipVideos/${item._id}`}>
                     <Box
                       display={"flex"}
                       alignItems={"center"}
                       width={"100%"}
+                      flexDirection={{base:"column-reverse",md:"row"}}
                       justifyContent={"space-between"}
                     >
                       <Text>{item.name}</Text>
+                      <Box display={"flex"} flexDirection={{base:"column",md:"row"}}>
                       <Button
                         border={"1px solid #1e2598"}
                         px={"30px"}
                         color={"#1e2598"}
+                        width={{base:"100%",md:"100%"}}
                       >
                         Edit
                       </Button>
+                      <Link to={`/dashboard/subscribers/${item._id}`}>
+                      <Button
+                        border={"1px solid #1e2598"}
+                        px={"10px"}
+                        color={"#1e2598"}
+                      >
+                        Subscribers
+                      </Button>
+                      </Link>
+                      </Box>
                     </Box>
+                    <Link to={`/dashboard/UploadMembershipVideos/${item._id}`}>
                     <Flex marginTop={"15"} alignItems={"center"}>
                       <Flex fontSize={"40px"} fontWeight={"bold"}>
                         ${item.price}
@@ -447,6 +472,7 @@ export const Tiers = () => {
           </Box>
         </>
       )}
+      <Pagination getPage={getPage} totalRecords={totalRecords} totalPage={totalPage}/>
     </Sidebar>
   );
 };

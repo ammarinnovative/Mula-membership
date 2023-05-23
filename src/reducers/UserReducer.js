@@ -24,21 +24,3 @@ const UserSlice = createSlice({
 export const { addUser, logout } = UserSlice.actions;
 export default UserSlice.reducer;
 
-// const { createSlice } = require('@reduxjs/toolkit');
-
-// const cartSlice = createSlice({
-//     name: 'user',
-//     initialState: ["Ammar"],
-//     reducers: {
-//         addUser(state,action){
-//                         state.User.push= action.payload;
-//                         localStorage.setItem('user',JSON.stringify(action.payload));
-//                     },
-//         remove(state, action) {
-//             return state.filter((item) => item.id !== action.payload);
-//         },
-//     },
-// });
-
-// export const { add, remove } = cartSlice.actions;
-// export default cartSlice.reducer;
