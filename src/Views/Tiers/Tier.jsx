@@ -117,7 +117,7 @@ export const Tiers = () => {
         zoomConferance: false,
         announcements: false,
         directMessage: false,
-        chatRoom:null
+        chatRoom:{}
 
       },
     ],
