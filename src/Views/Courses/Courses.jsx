@@ -14,7 +14,8 @@ import {
   Image,
   Button,
   useDisclosure,
-  Input
+  Input,
+  useToast
 } from "@chakra-ui/react";
 import Sidebar from "../../Components/Sidebar/Sidebar";
 import Img1 from "../../Assets/Images/Courses/course1.jpg";
@@ -34,12 +35,59 @@ import {
   ModalBody,
   ModalCloseButton,
 } from '@chakra-ui/react'
-import { useState } from "react";
-
-
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { TailSpin } from "react-loader-spinner";
+import {GET,POST} from "../../utilities/ApiProvider"
 export const Courses = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [fields,setFields] = useState();
+  const [user,setUser] = useState();
+  const [category,setCategory] = useState([]);
+  const [fields,setFields] = useState({
+    category_id:"",
+    name:"",
+    sub_title:"",
+    description:"",
+    price:null,
+    course_pic:null,
+    user_id:"63cf042fa7e6c6b2cef26d9b"
+  });
+
+
+  const selector = useSelector(state=>state);
+
+  useEffect(()=>{
+    if(selector){
+      setUser(selector?.user?.user?.data?.data);
+    }
+  },[selector])
+
+
+  useEffect(()=>{
+    if(user){
+      getCategory();
+    }
+  },[user])
+  const toast = useToast();
+  // <TailSpin
+  //           height="80"
+  //           width="80"
+  //           color="blue"
+  //           ariaLabel="tail-spin-loading"
+  //           radius="1"
+  //           wrapperStyle={{}}
+  //           wrapperClass=""
+  //           visible={true}
+  //         />
+
+  const getCategory = async ()=>{
+    const res =await GET("courseCategory/getAllCourseCategoryList",{
+      authorization:`bearer ${user?.JWT_TOKEN}`
+    });
+    setCategory(res?.data)
+  }
+
+  console.log(category)
 
   return (
     <Box>
@@ -431,16 +479,20 @@ export const Courses = () => {
           <ModalHeader>Cretae New Courses</ModalHeader>
           <ModalCloseButton />
           <ModalBody >
-            <Input type="text" placeholder="Name" m={"5px 0"} />
-            <Input type="number" placeholder="price" m={"5px 0"} />
-            <Input type="text" placeholder="Sub Title" m={"5px 0"} />
-            <Input type="text" placeholder="Description" m={"5px 0"} />
-            <Select placeholder="Select Option">
-            <option value='option1'>Option 1</option>
-            <option value='option1'>Option 1</option>
-            <option value='option1'>Option 1</option>
+            <Input onChange={(e)=>{setFields({...fields,name:e.target.value})}} type="text" placeholder="Name" m={"5px 0"} />
+            <Input onChange={(e)=>{setFields({...fields,price:e.target.value})}} type="number" placeholder="price" m={"5px 0"} />
+            <Input onChange={(e)=>{setFields({...fields,sub_title:e.target.value})}} type="text" placeholder="Sub Title" m={"5px 0"} />
+            <Input onChange={(e)=>{setFields({...fields,description:e.target.value})}} type="text" placeholder="Description" m={"5px 0"} />
+            <Select onChange={(e)=>{setFields({...fields,category_id:e.target.value})}} placeholder="Select Option">
+            {
+              category && category?.map((item)=>{
+                return(
+                  <option value={item._id}>{item.course_category_name}</option>
+                )
+              })
+            }
             </Select>
-            <Input type="file" placeholder="Image" m={"5px 0"} />
+            <Input type="file" onChange={(e)=>{setFields({...fields,name:e.target.files[0]})}} placeholder="Image" m={"5px 0"} />
             <Button backgroundColor={"#1e2598"} _hover={"none"} width={"100%"} color={"white"}>Create</Button>
           </ModalBody>
         </ModalContent>
