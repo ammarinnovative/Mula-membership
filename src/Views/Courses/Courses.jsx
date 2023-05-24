@@ -43,6 +43,7 @@ export const Courses = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [user,setUser] = useState();
   const [category,setCategory] = useState([]);
+  const [loading,setLoading] = useState(false);
   const [fields,setFields] = useState({
     category_id:"",
     name:"",
@@ -69,16 +70,7 @@ export const Courses = () => {
     }
   },[user])
   const toast = useToast();
-  // <TailSpin
-  //           height="80"
-  //           width="80"
-  //           color="blue"
-  //           ariaLabel="tail-spin-loading"
-  //           radius="1"
-  //           wrapperStyle={{}}
-  //           wrapperClass=""
-  //           visible={true}
-  //         />
+ 
 
   const getCategory = async ()=>{
     const res =await GET("courseCategory/getAllCourseCategoryList",{
@@ -87,8 +79,31 @@ export const Courses = () => {
     setCategory(res?.data)
   }
 
-  console.log(category)
 
+  const createPost = async ()=>{
+    setLoading(true);
+    if(!fields.name || !fields.price || !fields.category_id || !fields.sub_title || !fields.course_pic || !fields.description){
+      toast({
+        position:"bottom-left",
+        isClosable:true,
+        duration:5000,
+        status:"error",
+        description:"Please fill all the fields"
+      });
+      setLoading(false);
+      return;
+    }
+    const formData =new FormData();
+    for(let key in fields){
+      formData.append(key,fields[key]);
+    }
+    const res = await POST("course/addCourseDetail",formData,{
+      authorization: `bearer ${user?.JWT_TOKEN}`
+    });
+    setLoading(false);
+  }
+
+console.log(fields);
   return (
     <Box>
       <Sidebar>
@@ -492,8 +507,16 @@ export const Courses = () => {
               })
             }
             </Select>
-            <Input type="file" onChange={(e)=>{setFields({...fields,name:e.target.files[0]})}} placeholder="Image" m={"5px 0"} />
-            <Button backgroundColor={"#1e2598"} _hover={"none"} width={"100%"} color={"white"}>Create</Button>
+            <Input type="file" onChange={(e)=>{setFields({...fields,course_pic:e.target.files[0]})}} placeholder="Image" m={"5px 0"} />
+            <Button  onClick={createPost} backgroundColor={"#1e2598"} _hover={"none"} width={"100%"} color={"white"}>{loading? <TailSpin
+            width="30"
+            color="white"
+            ariaLabel="tail-spin-loading"
+            radius="1"
+            wrapperStyle={{}}
+            wrapperClass=""
+            visible={true}
+          />:"Create"}</Button>
           </ModalBody>
         </ModalContent>
       </Modal>
