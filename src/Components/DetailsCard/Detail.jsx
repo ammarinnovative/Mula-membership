@@ -11,7 +11,7 @@ const Detail = ({ data }) => {
             {
                 data.map((d) => {
                     return (
-                        <Box key={d.id} transition={"0.5s"} _hover={{backgroundColor:"#2c339e",color:"#fff !important"}} role={"group"}  backgroundColor={"#ececec"} margin={"0 5px 20px 5px"} marginBottom={"20px"} rounded={"md"} padding={"15px"} paddingBottom={"30px"} width={{ base: "100%", md: "47%", lg: "45%" }} color={"#fff"} >
+                        <Box key={d.id} transition={"0.5s"} _hover={{backgroundColor:"#2c339e",color:"#fff !important"}} role={"group"}  backgroundColor={"#ececec"} margin={"0 5px 20px 5px"} marginBottom={"20px"} rounded={"md"} padding={"15px"} paddingBottom={"30px"} width={{ base: "100%", md: "47%", lg: "30%" }} color={"#fff"} >
                             <Box display={"flex"}  justifyContent={"space-between"}>
                                 <Text color={"black"} _groupHover={{color:"white"}} fontSize={"15px"}>{d.num}</Text>
                                 <Box cursor={"pointer"}>

@@ -194,14 +194,11 @@ export const Home = () => {
                         <Text fontSize={{ base: "25px", md: "30px" }} textAlign={{ base: "center", md: "center", lg: "left" }} fontWeight={"600"}>Manage Your Courses</Text>
                         <Text textAlign={{ base: "center", md: "cneter", lg: "left" }}>Upload your courses to click on the plus icon</Text>
                     </Box>
-                    <Box width={"100%"} flex={"1"}>
-                        {/* <Input type="file" display={"none"} id={"file"} /> */}
-                        {/* <label htmlFor='file'> */}
+                    {/* <Box width={"100%"} flex={"1"}>
                         <Box cursor={"pointer"} display={"flex"} onClick={onOpen} width={"100%"} justifyContent={"center"} alignItems={"center"} height={"20vh"} border={"2px  dashed black"}>
                             <FaPlusCircle size={"25px"} />
                         </Box>
-                        {/* </label> */}
-                    </Box>
+                    </Box> */}
                     <Box marginTop={"20px"} flex={"3"} width={"100%"} fontWeight={"bold"} fontSize={"20px"}>
                         <Text>Recent Courses</Text>
                         <Detais data={data} />

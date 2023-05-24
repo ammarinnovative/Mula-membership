@@ -13,6 +13,8 @@ import {
   Text,
   Image,
   Button,
+  useDisclosure,
+  Input
 } from "@chakra-ui/react";
 import Sidebar from "../../Components/Sidebar/Sidebar";
 import Img1 from "../../Assets/Images/Courses/course1.jpg";
@@ -22,8 +24,23 @@ import Img4 from "../../Assets/Images/Courses/Image4.jpg";
 import Img5 from "../../Assets/Images/Courses/image5.jpg";
 import Img6 from "../../Assets/Images/Courses/Image6.jpg";
 import Img7 from "../../Assets/Images/Courses/Image7.jpg";
+import {
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  Select,
+  ModalBody,
+  ModalCloseButton,
+} from '@chakra-ui/react'
+import { useState } from "react";
+
 
 export const Courses = () => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [fields,setFields] = useState();
+
   return (
     <Box>
       <Sidebar>
@@ -72,6 +89,7 @@ export const Courses = () => {
               size="md"
               border={"1px solid #000000"}
               backgroundColor={"#ffffff"}
+              onClick={onOpen}
             >
               Create New Courses
             </Button>
@@ -407,6 +425,26 @@ export const Courses = () => {
             </Box>
           </Flex>
         </Box>
+        <Modal isOpen={isOpen} size={"xl"} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Cretae New Courses</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody >
+            <Input type="text" placeholder="Name" m={"5px 0"} />
+            <Input type="number" placeholder="price" m={"5px 0"} />
+            <Input type="text" placeholder="Sub Title" m={"5px 0"} />
+            <Input type="text" placeholder="Description" m={"5px 0"} />
+            <Select placeholder="Select Option">
+            <option value='option1'>Option 1</option>
+            <option value='option1'>Option 1</option>
+            <option value='option1'>Option 1</option>
+            </Select>
+            <Input type="file" placeholder="Image" m={"5px 0"} />
+            <Button backgroundColor={"#1e2598"} _hover={"none"} width={"100%"} color={"white"}>Create</Button>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
       </Sidebar>
     </Box>
   );
