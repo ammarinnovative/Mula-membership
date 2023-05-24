@@ -18,9 +18,6 @@ import {
   useToast
 } from "@chakra-ui/react";
 import Sidebar from "../../Components/Sidebar/Sidebar";
-import Img1 from "../../Assets/Images/Courses/course1.jpg";
-import Img2 from "../../Assets/Images/Courses/course2.jpg";
-import Img3 from "../../Assets/Images/Courses/course3.jpg";
 import Img4 from "../../Assets/Images/Courses/Image4.jpg";
 import Img5 from "../../Assets/Images/Courses/image5.jpg";
 import Img6 from "../../Assets/Images/Courses/Image6.jpg";
