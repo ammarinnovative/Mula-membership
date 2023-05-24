@@ -109,7 +109,7 @@ export const Tiers = () => {
     name: "",
     price: 0,
     membershipDetails: [],
-    thumbnail: {},
+    thumbnail: null,
     category: [],
     sub_title: "membership",
     access_levels: [
@@ -135,6 +135,7 @@ export const Tiers = () => {
     setData(" ");
   };
 
+  
   function setCheck(key, value) {
     let newAccessLevels = { ...fields.access_levels[0] };
     newAccessLevels[key] = value;
@@ -149,7 +150,16 @@ export const Tiers = () => {
 
   const postdata = async () => {
     
-    
+    if(!fields.name || !fields.price || !fields.thumbnail || !fields.category.length>0 || !fields.membershipDetails.length>0){
+      toast({
+        position:"bottom-left",
+        isClosable:true,
+        status:"error",
+        duration:5000,
+        description:"please fill all the fields"
+      });
+      return;
+    }
     
     setToggle(true);
     const object = {
@@ -171,6 +181,7 @@ export const Tiers = () => {
     const res = await POST("membership", formData, {
       authorization: `bearer ${user?.JWT_TOKEN}`,
     });
+    console.log(res);
     if(res.status==200){
       toast({
         position:"bottom-left",

@@ -58,7 +58,7 @@ const UploadVideo = () => {
     console.log(fields)
   const Upload = async () => {
     setState(true);
-    if(!fields.title || !fields.thumbnail || !fields.video || !fields.privatePath || !fields.privatePath){
+    if(!fields.title || !fields.thumbnail || !fields.video || !fields.category.length>0 || !fields.privatePath){
       toast({
         position:"bottom-left",
         status:"error",

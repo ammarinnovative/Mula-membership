@@ -89,6 +89,7 @@ export const Setting = () => {
           status: "error",
         });
         return;
+        setState(false);
       }
     }
     let data = new Object(feields);
