@@ -38,12 +38,14 @@ import {
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { TailSpin } from "react-loader-spinner";
+import { imageURL } from "../../utilities/config";
 import {GET,POST} from "../../utilities/ApiProvider"
 export const Courses = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [user,setUser] = useState();
   const [category,setCategory] = useState([]);
   const [loading,setLoading] = useState(false);
+  const [course,setCourses] = useState([]);
   const [fields,setFields] = useState({
     category_id:"",
     name:"",
@@ -67,6 +69,7 @@ export const Courses = () => {
   useEffect(()=>{
     if(user){
       getCategory();
+      getCourseVideos();
     }
   },[user])
   const toast = useToast();
@@ -100,37 +103,30 @@ export const Courses = () => {
     const res = await POST("course/addCourseDetail",formData,{
       authorization: `bearer ${user?.JWT_TOKEN}`
     });
+    toast({
+      position:"bottom-left",
+      isClosable:true,
+      duration:5000,
+      status:"success",
+      description:"Video created successfully"
+    })
+    getCourseVideos();
     setLoading(false);
   }
 
-console.log(fields);
-  return (
+
+const getCourseVideos = async ()=>{
+  const res =await GET("course?limit=6&page=1",{
+    authorization:`bearer ${user?.JWT_TOKEN}`
+  });
+  setCourses(res.data);
+}
+
+
+return (
     <Box>
       <Sidebar>
         <Box>
-          <Box>
-            <Button
-              backgroundColor={"#1e2598"}
-              margin={"10px 0"}
-              width={{ base: "100%", md: "40%", lg: "25%" }}
-              _hover={"none"}
-              marginRight="10px"
-              px={"40px"}
-              color="white"
-            >
-              Courses
-            </Button>
-            <Button
-              backgroundColor={"#1E2598"}
-              margin={"10px 0"}
-              width={{ base: "100%", md: "40%", lg: "25%" }}
-              px={"40px"}
-              _hover={"none"}
-              color="white"
-            >
-              Membership Videos
-            </Button>
-          </Box>
           <Flex
             justifyContent={"space-between"}
             margin={"20px 0"}
@@ -142,7 +138,7 @@ console.log(fields);
               fontFamily={"AvenirLT"}
               fontWeight={"bold"}
             >
-              3 Crypto courses
+              {course.length} Crypto courses
             </Text>
             <Button
               color={"#000000"}
@@ -162,23 +158,33 @@ console.log(fields);
             flexWrap={"wrap"}
             width={"100%"}
           >
-            <Box
+            {
+              course && course?.map((item)=>{
+                return(
+                  <Box
               cursor={"pointer"}
               width={{ base: "80%", md: "40%", lg: "30%" }}
+              alignSelf={"normal"}
+              objectFit={"cover"}
+
             >
+              <Box height={"200px"}>
               <Image
-                src={Img1}
+                src={imageURL+item.coursePic}
                 width={"100%"}
+                borderRadius={"7px"}
+                height={"100%"}
                 marginTop={"50px"}
                 alt={"Image"}
               />
+              </Box>
               <Text
                 fontWeight={"600"}
                 fontFamily={"Poppins700"}
                 marginTop={"5px"}
                 fontSize={"20px"}
               >
-                Crypto Explained:Security Action
+                {item?.name}
               </Text>
               <Box marginTop={"15px"}>
                 <Box
@@ -200,97 +206,14 @@ console.log(fields);
                   justifyContent={"space-between"}
                   alignItems={"center"}
                 >
-                  <Text>Crypto Trading</Text>
-                  <Text>11</Text>
+                  <Text>Price</Text>
+                  <Text>{item.price}</Text>
                 </Box>
               </Box>
             </Box>
-            <Box
-              cursor={"pointer"}
-              width={{ base: "80%", md: "40%", lg: "30%" }}
-            >
-              <Image
-                src={Img2}
-                width={"100%"}
-                marginTop={"50px"}
-                alt={"Image"}
-              />
-              <Text
-                fontWeight={"600"}
-                fontFamily={"Poppins700"}
-                marginTop={"5px"}
-                fontSize={"20px"}
-              >
-                Crypto Explained:Security Action
-              </Text>
-              <Box marginTop={"15px"}>
-                <Box
-                  display={"flex"}
-                  fontSize={"20px"}
-                  color={"gray.600"}
-                  fontFamily={"Poppins400"}
-                  justifyContent={"space-between"}
-                  alignItems={"center"}
-                >
-                  <Text>Category</Text>
-                  <Text>Videos</Text>
-                </Box>
-                <Box
-                  display={"flex"}
-                  fontSize={"20px"}
-                  color={"blue"}
-                  fontFamily={"Poppins400"}
-                  justifyContent={"space-between"}
-                  alignItems={"center"}
-                >
-                  <Text>Crypto Trading</Text>
-                  <Text>11</Text>
-                </Box>
-              </Box>
-            </Box>
-            <Box
-              cursor={"pointer"}
-              width={{ base: "80%", md: "40%", lg: "30%" }}
-            >
-              <Image
-                src={Img3}
-                width={"100%"}
-                marginTop={"50px"}
-                alt={"Image"}
-              />
-              <Text
-                fontWeight={"600"}
-                fontFamily={"Poppins700"}
-                marginTop={"5px"}
-                fontSize={"20px"}
-              >
-                Crypto Explained:Security Action
-              </Text>
-              <Box marginTop={"15px"}>
-                <Box
-                  display={"flex"}
-                  fontSize={"20px"}
-                  color={"gray.600"}
-                  fontFamily={"Poppins400"}
-                  justifyContent={"space-between"}
-                  alignItems={"center"}
-                >
-                  <Text>Category</Text>
-                  <Text>Videos</Text>
-                </Box>
-                <Box
-                  display={"flex"}
-                  fontSize={"20px"}
-                  color={"blue"}
-                  fontFamily={"Poppins400"}
-                  justifyContent={"space-between"}
-                  alignItems={"center"}
-                >
-                  <Text>Crypto Trading</Text>
-                  <Text>11</Text>
-                </Box>
-              </Box>
-            </Box>
+                )
+              })
+            }
           </Flex>
         </Box>
         <Box>
@@ -502,7 +425,7 @@ console.log(fields);
             {
               category && category?.map((item)=>{
                 return(
-                  <option value={item._id}>{item.course_category_name}</option>
+                  <option key={item._id} value={item._id}>{item.course_category_name}</option>
                 )
               })
             }
