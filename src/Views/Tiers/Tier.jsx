@@ -81,8 +81,8 @@ export const Tiers = () => {
       authorization: `bearer ${user?.JWT_TOKEN}`,
     });
     setMembershipPlan(res?.data);
-    setTotalPage(res.totalPages.page);
-    setTotalRecords(res.totalPages.totalRecords)
+    setTotalPage(res?.totalPages.page);
+    setTotalRecords(res?.totalPages.totalRecords)
     setStateLoad(false);
   };
   
@@ -127,6 +127,8 @@ export const Tiers = () => {
   useEffect(() => {
     if (!chatRoom) setCheck("chatRoom", undefined);
   }, [chatRoom]);
+
+
   const Data = () => {
     setFeature([...feature, { text: data }]);
     setFields({ ...fields, membershipDetails: [...feature, { text: data }] });
