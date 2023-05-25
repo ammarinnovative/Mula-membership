@@ -36,7 +36,9 @@ import { GrUpload } from "react-icons/gr";
 import Upload_your_video_2 from "../../Assets/Images/Upload_your_video_2.png";
 import { useEffect } from "react";
 import { useState } from "react";
-import { GET } from "../../utilities/ApiProvider";
+import { TailSpin } from "react-loader-spinner";
+import { useToast } from "@chakra-ui/react";
+import { GET, POST } from "../../utilities/ApiProvider";
 import { useParams } from "react-router-dom";
 export default function SingleCourse() {
   const [user, setUser] = useState({});
@@ -45,11 +47,14 @@ export default function SingleCourse() {
   const [filterData, setFilterData] = useState([]);
   const [filterVideo, setFilterVideo] = useState([]);
   const [filterItem, setFilterItem] = useState([]);
+  const [loading,setLoading] = useState(false);
+  const [state,setState] = useState(0);
 
   const params = useParams();
 
+  const toast = useToast();
+
   const [fields, setFields] = useState({
-    course_id: params.id,
     category_id: "",
     video: [],
   });
@@ -103,7 +108,60 @@ export default function SingleCourse() {
       setFields({...fields,video:[...fields.video,item._id]});
     }
   };
-  console.log(fields);
+  
+  console.log(state);
+  console.log(fields)
+
+  useEffect(()=>{
+    setFields({...fields,course_id:params.id,video:[]});
+  },[state])
+  
+  const postVideo = async ()=>{
+  setLoading(true);
+  if(!fields.category_id || !fields.course_id || !fields.video.length>0){
+    toast({
+      position:"bottom-left",
+      isClosable:true,
+      duration:5000,
+      status:"error",
+      description:"Please fill all the fields"
+    });
+    setLoading(false);
+    return;
+  }
+  const res = await POST("courseTopic/AddCourseTopicDetail",fields,{
+    authorization:`bearer ${user?.JWT_TOKEN}`
+  })
+  if(res.status ==200){
+    toast({
+      position:"bottom-left",
+      isClosable:true,
+      duration:5000,
+      status:"success",
+      description:res.data.message
+    });
+    // setFields({category_id:"",video:[]});
+    // setFields({video:[],category_id:" "});
+    if(state<10){
+    setState(state+1);
+  }
+  else{
+      setState(0);
+    }
+  }
+  else{
+    toast({
+      position:"bottom-left",
+      isClosable:true,
+      duration:5000,
+      status:"error",
+      description:res.data.error
+    })
+  }
+
+  setLoading(false);
+  
+}
 
   return (
     <Sidebar>
@@ -119,6 +177,7 @@ export default function SingleCourse() {
               onChange={(e) => {
                 getElement(e.target.value);
               }}
+              // value={fields.category_id}
               mt={"15px"}
               border={"1px solid #000"}
               _placeholder={{ color: "#867878", fontWeight: "bold" }}
@@ -155,7 +214,7 @@ export default function SingleCourse() {
                       height={"200px"}
                     >
                       <Box width={"200px"} height={"140px"} objectFit={"cover"}>
-                        <Image borderRadius={"8px"} height={"full"} src={imageURL+item.thumbnail} w="100%" />
+                        <Image borderRadius={"8px"} height={"100%"} src={imageURL+item.thumbnail} w="100%" />
                       </Box>
                       <Stack
                         spacing={"15px"}
@@ -182,6 +241,7 @@ export default function SingleCourse() {
               borderRadius={"5px"}
               border={"1px solid #1e2598"}
               bg={"#1e2598"}
+              onClick={postVideo}
               color={"#fff"}
               _hover={{
                 bg: "transparent",
@@ -190,47 +250,17 @@ export default function SingleCourse() {
                 border: "1px solid #000",
               }}
             >
-              Publish
+              {
+                loading?<TailSpin
+                width="30"
+                color="white"
+                ariaLabel="tail-spin-loading"
+                radius="1"
+                visible={true}
+              />:"Publish"
+              }
+              
             </Button>
-          </Box>
-        </Stack>
-
-        {/* Create New Category */}
-        <Stack flex={"1"}>
-          <Box bg={"#1e2598"} p={"15px 20px 20px 15px"} borderRadius={"5px"}>
-            <Text
-              color={"#fff"}
-              fontWeight={"600"}
-              fontFamily={"poppins"}
-              fontSize={{ base: "15px", md: "18px" }}
-              mb={"10px"}
-            >
-              Create New Category
-            </Text>
-            <Box mt={"30px"} position={"relative"}>
-              <Input
-                type={Text}
-                border={"1px solid #fff"}
-                height={"50px"}
-                color={"white"}
-                placeholder="Enter Name"
-                _placeholder={{ color: "#fff" }}
-              />
-              <Box position={"absolute"} right={"8px"} top={"8px"}>
-                <Button
-                  h={"35px"}
-                  border={"1px solid #fff"}
-                  _hover={{
-                    bg: "transparent",
-                    border: "1px solid #fff",
-                    color: "#fff",
-                    transition: "all 0.5s",
-                  }}
-                >
-                  Create
-                </Button>
-              </Box>
-            </Box>
           </Box>
         </Stack>
       </Flex>
