@@ -24,7 +24,7 @@ export const Router = ()=>{
             <Route path="/login" element={<LoginPage />}/>
             <Route path="/dashboard/courses" element={<Courses />}/>
             <Route path="/dashboard/user" element={<UserScreen />}/>
-            <Route path="/dashboard/CourseDetails:id" element={<SingleCourse/>}/>
+            <Route path="/dashboard/CourseDetails/:id" element={<SingleCourse/>}/>
             <Route path="/dashboard/chatsScreen" element={<ChatsScreen/>}/>
             <Route path="/dashboard/UserScreen" element={<UserCourses />}/>
             <Route path="/dashboard/Setting" element={<Setting />}/>

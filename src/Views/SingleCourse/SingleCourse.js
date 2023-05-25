@@ -15,70 +15,78 @@ import {
   ModalCloseButton,
 } from '@chakra-ui/react'
 import { AiOutlineArrowLeft } from 'react-icons/ai';
+import { useSelector } from 'react-redux';
 import { GrUpload } from 'react-icons/gr';
 import Upload_your_video_2 from "../../Assets/Images/Upload_your_video_2.png"
+import { useEffect } from 'react';
+import { useState } from 'react';
+import { GET } from '../../utilities/ApiProvider';
+import { useParams } from 'react-router-dom';
 export default function SingleCourse() {
-  const { isOpen, onOpen, onClose } = useDisclosure()
-  const finalRef = React.useRef(null)
+  const [user,setUser] = useState({});
+  const selector = useSelector(state=>state);
+  const [video,setVideo] = useState([]);
+  const [filterData,setFilterData] = useState([]);
+
+
+  const params = useParams();
+
+
+  const [fields,setFields] = useState({
+    course_id:params.id,
+    category_id:"",
+    video:[]
+  });
+
+
+  const getVideo =async ()=>{
+    const res = await GET("video/admin",{
+      authorization:`bearer ${user?.JWT_TOKEN}`
+    });
+    setVideo(res.data);
+   
+  }
+
+  useEffect(()=>{
+    if(selector){
+      setUser(selector?.user?.user?.data?.data);
+    }
+  },[selector]);
+  useEffect(()=>{
+    if(user){
+      getVideo();
+    }
+  },[user]);
+
+ console.log(fields);
+
+  const Category = [...new Set(video&& video?.map((item)=>{return item.course_category_name}))];
+
+  const getElement = (item)=>{
+    setFields({...fields,category_id:item._id});
+    
+  }
+
   return (
     <Sidebar>
-      <Box ref={finalRef} tabIndex={-1} aria-label='Focus moved to this box'>
-        Some other content that'll receive focus on close.
-      </Box>
-      <Modal finalFocusRef={finalRef} size={"2xl"} isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <Box display={"flex"}alignItems={"center"} justifyContent={"space-between"} >
-          <ModalHeader>
-            <Box display={"flex"}   alignItems={"center"}>
-               <Box cursor={"pointer"} onClick={onClose}><AiOutlineArrowLeft /></Box>
-                <Text w={"200px"} >Upload New Videos</Text>
-            </Box></ModalHeader>
-          {/* <ModalCloseButton /> */}
-          <Button width={"20%"} mr={"13px"} color={"#fff"} _hover={{backgroundColor:"none"}} backgroundColor={"#0d1140"}>Next</Button>
-          </Box>
-          <Input id='file' type='file' display={"none"} />
-          <label htmlFor='file'>
-            <ModalBody>
-              <Box width={"100%"} cursor={"pointer"} display={"flex"} alignItems={"center"} flexDirection={"column"} justifyContent={"center"} height={"15vh"} border={"1px dotted black"}>
-                <GrUpload fontSize={"23px"} />
-                <Text>Upload Your Video</Text>
-              </Box>
-              <Box marginTop={"10px"}>
-                <FormControl>
-                  <Input placeholder='Video Title' />
-                </FormControl>
-                <FormControl marginTop={"10px"}>
-                  <Input placeholder='Description' height={"8vh"} />
-                </FormControl>
-              </Box>
-            </ModalBody>
-          </label>
-        </ModalContent>
-      </Modal>
-      <Flex gap={"20px"} flexDirection={{ base: "column-reverse", md: "row" }} textAlign={{ base: "center", md: 'left' }}>
+          
+      <Flex gap={"20px"} mt={"20px"} flexDirection={{ base: "column-reverse", md: "row" }} textAlign={{ base: "center", md: 'left' }}>
         <Stack flex={"2"}>
-          <Box mb={"20px"}>
-            <Heading as="h2" size="md">
-              Crypto Explained: Security Action
-            </Heading>
-          </Box>
-
-          {/* input filed */}
           <Box>
-            <Input type={Text} border={"1px solid #000"} placeholder="Crypto Explained: Security Action" _placeholder={{ color: "#867878" }} />
-            <Select placeholder='Crypto' mt={"15px"} border={"1px solid #000"} _placeholder={{ color: "#867878", fontWeight: "bold" }}>
-              <option value='option1'>Option 1</option>
-              <option value='option2'>Option 2</option>
-              <option value='option3'>Option 3</option>
+            <Select onChange={(e)=>{getElement(e)}} placeholder='Select an option' mt={"15px"} border={"1px solid #000"} _placeholder={{ color: "#867878", fontWeight: "bold" }}>
+              {
+                video && video?.map((item)=>{
+                  return(
+                    <option>{item?.course_category_name}</option>
+                  )
+                })
+              }
             </Select>
-            <Textarea type={Text} mt={"15px"} border={"1px solid #000"} placeholder="Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur." _placeholder={{ color: "#867878" }}></Textarea>
-            <Input type={Text} mt={"15px"} border={"1px solid #000"} placeholder="$25.00" _placeholder={{ color: "#867878" }} />
           </Box>
-
+         
           <Box>
             <Heading as="h2" size="md" mt={"30px"} mb={"20px"}>
-              Available Vidoes
+              Uploaded Vidoes
             </Heading>
           </Box>
           <Flex gap="15px" flexDirection={{ base: "column", sm: "row"}} justifyContent={{ base: "center", sm: "center", md: 'left' }} >
@@ -98,23 +106,9 @@ export default function SingleCourse() {
             </Box>
           </Flex>
           <Box >
-            <Heading as="h2" mt={"15px"} size="md" mb={"20px"}>
-              Add more videos
-            </Heading>
-          </Box>
-          <Box >
             {/* <Input type={"file"} display={"none"} id={"file"} ></Input>
             <label htmlFor='file'> */}
-            <Stack
-              onClick={onOpen}
-              padding={"30px 50px"}
-              bg={"#ececec"}
-              border={"1px Dashed #000"}
-              borderRadius={"10px"}
-              cursor={"pointer"} spacing="2" alignItems={"center"} width={"30%"} w={{ base: "100%", md: '35%', lg: '', '2xl': '' }}>
-              <AiOutlineUpload fontSize={"50px"} />
-              <Text>Upload Your Video</Text>
-            </Stack>
+            
             {/* </label> */}
           </Box>
           <Box>

@@ -251,10 +251,7 @@ export default function UploadMember() {
    
     
   };
-  
-  console.log(selectedItem)
-  
-
+    
 
   const getVideoItem = async () => {
     const res = await GET(`video/admin`, {

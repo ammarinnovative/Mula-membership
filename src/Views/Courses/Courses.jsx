@@ -15,7 +15,7 @@ import {
   Button,
   useDisclosure,
   Input,
-  useToast
+  useToast,
 } from "@chakra-ui/react";
 import Sidebar from "../../Components/Sidebar/Sidebar";
 import Img4 from "../../Assets/Images/Courses/Image4.jpg";
@@ -31,96 +31,98 @@ import {
   Select,
   ModalBody,
   ModalCloseButton,
-} from '@chakra-ui/react'
+} from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 import { TailSpin } from "react-loader-spinner";
 import { imageURL } from "../../utilities/config";
-import {GET,POST} from "../../utilities/ApiProvider"
+import { GET, POST } from "../../utilities/ApiProvider";
 export const Courses = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [user,setUser] = useState();
-  const [category,setCategory] = useState([]);
-  const [loading,setLoading] = useState(false);
-  const [course,setCourses] = useState([]);
-  const [fields,setFields] = useState({
-    category_id:"",
-    name:"",
-    sub_title:"",
-    description:"",
-    price:null,
-    course_pic:null,
-    user_id:"63cf042fa7e6c6b2cef26d9b"
+  const [user, setUser] = useState();
+  const [category, setCategory] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [course, setCourses] = useState([]);
+  const [fields, setFields] = useState({
+    category_id: "",
+    name: "",
+    sub_title: "",
+    description: "",
+    price: null,
+    course_pic: null,
+    user_id: "63cf042fa7e6c6b2cef26d9b",
   });
 
+  const selector = useSelector((state) => state);
 
-  const selector = useSelector(state=>state);
-
-  useEffect(()=>{
-    if(selector){
+  useEffect(() => {
+    if (selector) {
       setUser(selector?.user?.user?.data?.data);
     }
-  },[selector])
+  }, [selector]);
 
-
-  useEffect(()=>{
-    if(user){
+  useEffect(() => {
+    if (user) {
       getCategory();
       getCourseVideos();
     }
-  },[user])
+  }, [user]);
   const toast = useToast();
- 
 
-  const getCategory = async ()=>{
-    const res =await GET("courseCategory/getAllCourseCategoryList",{
-      authorization:`bearer ${user?.JWT_TOKEN}`
+  const getCategory = async () => {
+    const res = await GET("courseCategory/getAllCourseCategoryList", {
+      authorization: `bearer ${user?.JWT_TOKEN}`,
     });
-    setCategory(res?.data)
-  }
+    setCategory(res?.data);
+  };
 
-
-  const createPost = async ()=>{
+  const createPost = async () => {
     setLoading(true);
-    if(!fields.name || !fields.price || !fields.category_id || !fields.sub_title || !fields.course_pic || !fields.description){
+    if (
+      !fields.name ||
+      !fields.price ||
+      !fields.category_id ||
+      !fields.sub_title ||
+      !fields.course_pic ||
+      !fields.description
+    ) {
       toast({
-        position:"bottom-left",
-        isClosable:true,
-        duration:5000,
-        status:"error",
-        description:"Please fill all the fields"
+        position: "bottom-left",
+        isClosable: true,
+        duration: 5000,
+        status: "error",
+        description: "Please fill all the fields",
       });
       setLoading(false);
       return;
     }
-    const formData =new FormData();
-    for(let key in fields){
-      formData.append(key,fields[key]);
+    const formData = new FormData();
+    for (let key in fields) {
+      formData.append(key, fields[key]);
     }
-    const res = await POST("course/addCourseDetail",formData,{
-      authorization: `bearer ${user?.JWT_TOKEN}`
+    const res = await POST("course/addCourseDetail", formData, {
+      authorization: `bearer ${user?.JWT_TOKEN}`,
     });
     toast({
-      position:"bottom-left",
-      isClosable:true,
-      duration:5000,
-      status:"success",
-      description:"Video created successfully"
-    })
+      position: "bottom-left",
+      isClosable: true,
+      duration: 5000,
+      status: "success",
+      description: "Video created successfully",
+    });
     getCourseVideos();
     setLoading(false);
-  }
+  };
 
+  const getCourseVideos = async () => {
+    const res = await GET("course?limit=6&page=1", {
+      authorization: `bearer ${user?.JWT_TOKEN}`,
+    });
+    setCourses(res.data);
+  };
 
-const getCourseVideos = async ()=>{
-  const res =await GET("course?limit=6&page=1",{
-    authorization:`bearer ${user?.JWT_TOKEN}`
-  });
-  setCourses(res.data);
-}
-
-
-return (
+  return (
     <Box>
       <Sidebar>
         <Box>
@@ -151,295 +153,155 @@ return (
             </Button>
           </Flex>
           <Flex
-            justifyContent={{ base: "center", md: "space-between" }}
+            justifyContent={{ base: "center", md: "left" }}
             flexWrap={"wrap"}
+            gap={"40px"}
             width={"100%"}
           >
-            {
-              course && course?.map((item)=>{
-                return(
-                  <Box
-              cursor={"pointer"}
-              width={{ base: "80%", md: "40%", lg: "30%" }}
-              alignSelf={"normal"}
-              objectFit={"cover"}
+            {course &&
+              course?.map((item) => {
+                return (
+                    <Box
+                      cursor={"pointer"}
+                      width={{ base: "80%", md: "40%", lg: "30%" }}
+                      alignSelf={"normal"}
+                      objectFit={"cover"}
+                    >
+                    <Link to={`/dashboard/CourseDetails/${item._id}`}>
+                      <Box height={"200px"}>
+                        <Image
+                          src={imageURL + item.coursePic}
+                          width={"100%"}
+                          borderRadius={"7px"}
+                          height={"100%"}
+                          marginTop={"50px"}
+                          alt={"Image"}
+                        />
+                      </Box>
+                      <Text
+                        fontWeight={"600"}
+                        fontFamily={"Poppins700"}
+                        marginTop={"5px"}
+                        fontSize={"20px"}
+                      >
+                        {item?.name}
+                      </Text>
+                      <Box marginTop={"15px"}>
+                        <Box
+                          display={"flex"}
+                          fontSize={"20px"}
+                          color={"gray.600"}
+                          fontFamily={"Poppins400"}
+                          justifyContent={"space-between"}
+                          alignItems={"center"}
+                        >
+                          <Text>Category</Text>
+                          <Text>Videos</Text>
+                        </Box>
+                        <Box
+                          display={"flex"}
+                          fontSize={"20px"}
+                          color={"blue"}
+                          fontFamily={"Poppins400"}
+                          justifyContent={"space-between"}
+                          alignItems={"center"}
+                        >
+                          <Text>Price</Text>
+                          <Text>{item.price}</Text>
+                        </Box>
+                      </Box>
+                      </Link>
 
-            >
-              <Box height={"200px"}>
-              <Image
-                src={imageURL+item.coursePic}
-                width={"100%"}
-                borderRadius={"7px"}
-                height={"100%"}
-                marginTop={"50px"}
-                alt={"Image"}
-              />
-              </Box>
-              <Text
-                fontWeight={"600"}
-                fontFamily={"Poppins700"}
-                marginTop={"5px"}
-                fontSize={"20px"}
-              >
-                {item?.name}
-              </Text>
-              <Box marginTop={"15px"}>
-                <Box
-                  display={"flex"}
-                  fontSize={"20px"}
-                  color={"gray.600"}
-                  fontFamily={"Poppins400"}
-                  justifyContent={"space-between"}
-                  alignItems={"center"}
-                >
-                  <Text>Category</Text>
-                  <Text>Videos</Text>
-                </Box>
-                <Box
-                  display={"flex"}
-                  fontSize={"20px"}
-                  color={"blue"}
-                  fontFamily={"Poppins400"}
-                  justifyContent={"space-between"}
-                  alignItems={"center"}
-                >
-                  <Text>Price</Text>
-                  <Text>{item.price}</Text>
-                </Box>
-              </Box>
-            </Box>
-                )
-              })
-            }
-          </Flex>
-        </Box>
-        <Box>
-          <Flex mt={"50px"} alignItems={"center"}>
-            <Text
-              fontSize={"22px"}
-              fontFamily={"poppins"}
-              marginRight={"60px"}
-              fontWeight={"bold"}
-            >
-              11 Stock Market Courses courses
-            </Text>
-            <Text cursor={"pointer"}>View All</Text>
-          </Flex>
-          <Flex
-            justifyContent={{ base: "center", md: "space-between" }}
-            flexWrap={"wrap"}
-            width={"100%"}
-          >
-            <Box
-              cursor={"pointer"}
-              margin={"0 10px"}
-              width={{ base: "80%", md: "45%", lg: "23%" }}
-            >
-              <Image
-                src={Img4}
-                width={"100%"}
-                marginTop={"50px"}
-                alt={"Image"}
-              />
-              <Text
-                fontWeight={"600"}
-                fontFamily={"Poppins700"}
-                marginTop={"5px"}
-                fontSize={"20px"}
-              >
-                Crypto Explained:Security Action
-              </Text>
-              <Box marginTop={"15px"}>
-                <Box
-                  display={"flex"}
-                  fontSize={"20px"}
-                  color={"gray.600"}
-                  fontFamily={"Poppins400"}
-                  justifyContent={"space-between"}
-                  alignItems={"center"}
-                >
-                  <Text>Category</Text>
-                  <Text>Videos</Text>
-                </Box>
-                <Box
-                  display={"flex"}
-                  fontSize={"20px"}
-                  color={"blue"}
-                  fontFamily={"Poppins400"}
-                  justifyContent={"space-between"}
-                  alignItems={"center"}
-                >
-                  <Text>Crypto Trading</Text>
-                  <Text>11</Text>
-                </Box>
-              </Box>
-            </Box>
-            <Box
-              cursor={"pointer"}
-              margin={"0 10px"}
-              width={{ base: "80%", md: "45%", lg: "23%" }}
-            >
-              <Image
-                src={Img5}
-                width={"100%"}
-                marginTop={"50px"}
-                alt={"Image"}
-              />
-              <Text
-                fontWeight={"600"}
-                fontFamily={"Poppins700"}
-                marginTop={"5px"}
-                fontSize={"20px"}
-              >
-                Crypto Explained:Security Action
-              </Text>
-              <Box marginTop={"15px"}>
-                <Box
-                  display={"flex"}
-                  fontSize={"20px"}
-                  color={"gray.600"}
-                  fontFamily={"Poppins400"}
-                  justifyContent={"space-between"}
-                  alignItems={"center"}
-                >
-                  <Text>Category</Text>
-                  <Text>Videos</Text>
-                </Box>
-                <Box
-                  display={"flex"}
-                  fontSize={"20px"}
-                  color={"blue"}
-                  fontFamily={"Poppins400"}
-                  justifyContent={"space-between"}
-                  alignItems={"center"}
-                >
-                  <Text>Crypto Trading</Text>
-                  <Text>11</Text>
-                </Box>
-              </Box>
-            </Box>
-            <Box
-              cursor={"pointer"}
-              margin={"0 10px"}
-              width={{ base: "80%", md: "45%", lg: "23%" }}
-            >
-              <Image
-                src={Img6}
-                width={"100%"}
-                marginTop={"50px"}
-                alt={"Image"}
-              />
-              <Text
-                fontWeight={"600"}
-                fontFamily={"Poppins700"}
-                marginTop={"5px"}
-                fontSize={"20px"}
-              >
-                Crypto Explained:Security Action
-              </Text>
-              <Box marginTop={"15px"}>
-                <Box
-                  display={"flex"}
-                  fontSize={"20px"}
-                  color={"gray.600"}
-                  fontFamily={"Poppins400"}
-                  justifyContent={"space-between"}
-                  alignItems={"center"}
-                >
-                  <Text>Category</Text>
-                  <Text>Videos</Text>
-                </Box>
-                <Box
-                  display={"flex"}
-                  fontSize={"20px"}
-                  color={"blue"}
-                  fontFamily={"Poppins400"}
-                  justifyContent={"space-between"}
-                  alignItems={"center"}
-                >
-                  <Text>Crypto Trading</Text>
-                  <Text>11</Text>
-                </Box>
-              </Box>
-            </Box>
-            <Box
-              cursor={"pointer"}
-              margin={"0 10px"}
-              width={{ base: "80%", md: "45%", lg: "23%" }}
-            >
-              <Image
-                src={Img7}
-                width={"100%"}
-                marginTop={"50px"}
-                alt={"Image"}
-              />
-              <Text
-                fontWeight={"600"}
-                fontFamily={"Poppins700"}
-                marginTop={"5px"}
-                fontSize={"20px"}
-              >
-                Crypto Explained:Security Action
-              </Text>
-              <Box marginTop={"15px"}>
-                <Box
-                  display={"flex"}
-                  fontSize={"20px"}
-                  color={"gray.600"}
-                  fontFamily={"Poppins400"}
-                  justifyContent={"space-between"}
-                  alignItems={"center"}
-                >
-                  <Text>Category</Text>
-                  <Text>Videos</Text>
-                </Box>
-                <Box
-                  display={"flex"}
-                  fontSize={"20px"}
-                  color={"blue"}
-                  fontFamily={"Poppins400"}
-                  justifyContent={"space-between"}
-                  alignItems={"center"}
-                >
-                  <Text>Crypto Trading</Text>
-                  <Text>11</Text>
-                </Box>
-              </Box>
-            </Box>
+                    </Box>
+                );
+              })}
           </Flex>
         </Box>
         <Modal isOpen={isOpen} size={"xl"} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Cretae New Courses</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody >
-            <Input onChange={(e)=>{setFields({...fields,name:e.target.value})}} type="text" placeholder="Name" m={"5px 0"} />
-            <Input onChange={(e)=>{setFields({...fields,price:e.target.value})}} type="number" placeholder="price" m={"5px 0"} />
-            <Input onChange={(e)=>{setFields({...fields,sub_title:e.target.value})}} type="text" placeholder="Sub Title" m={"5px 0"} />
-            <Input onChange={(e)=>{setFields({...fields,description:e.target.value})}} type="text" placeholder="Description" m={"5px 0"} />
-            <Select onChange={(e)=>{setFields({...fields,category_id:e.target.value})}} placeholder="Select Option">
-            {
-              category && category?.map((item)=>{
-                return(
-                  <option key={item._id} value={item._id}>{item.course_category_name}</option>
-                )
-              })
-            }
-            </Select>
-            <Input type="file" onChange={(e)=>{setFields({...fields,course_pic:e.target.files[0]})}} placeholder="Image" m={"5px 0"} />
-            <Button  onClick={createPost} backgroundColor={"#1e2598"} _hover={"none"} width={"100%"} color={"white"}>{loading? <TailSpin
-            width="30"
-            color="white"
-            ariaLabel="tail-spin-loading"
-            radius="1"
-            wrapperStyle={{}}
-            wrapperClass=""
-            visible={true}
-          />:"Create"}</Button>
-          </ModalBody>
-        </ModalContent>
-      </Modal>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Cretae New Courses</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              <Input
+                onChange={(e) => {
+                  setFields({ ...fields, name: e.target.value });
+                }}
+                type="text"
+                placeholder="Name"
+                m={"5px 0"}
+              />
+              <Input
+                onChange={(e) => {
+                  setFields({ ...fields, price: e.target.value });
+                }}
+                type="number"
+                placeholder="price"
+                m={"5px 0"}
+              />
+              <Input
+                onChange={(e) => {
+                  setFields({ ...fields, sub_title: e.target.value });
+                }}
+                type="text"
+                placeholder="Sub Title"
+                m={"5px 0"}
+              />
+              <Input
+                onChange={(e) => {
+                  setFields({ ...fields, description: e.target.value });
+                }}
+                type="text"
+                placeholder="Description"
+                m={"5px 0"}
+              />
+              <Select
+                onChange={(e) => {
+                  setFields({ ...fields, category_id: e.target.value });
+                }}
+                placeholder="Select Option"
+              >
+                {category &&
+                  category?.map((item) => {
+                    return (
+                      <option key={item._id} value={item._id}>
+                        {item.course_category_name}
+                      </option>
+                    );
+                  })}
+              </Select>
+              <Input
+                type="file"
+                onChange={(e) => {
+                  setFields({ ...fields, course_pic: e.target.files[0] });
+                }}
+                placeholder="Image"
+                m={"5px 0"}
+              />
+              <Button
+                onClick={createPost}
+                backgroundColor={"#1e2598"}
+                _hover={"none"}
+                width={"100%"}
+                color={"white"}
+              >
+                {loading ? (
+                  <TailSpin
+                    width="30"
+                    color="white"
+                    ariaLabel="tail-spin-loading"
+                    radius="1"
+                    wrapperStyle={{}}
+                    wrapperClass=""
+                    visible={true}
+                  />
+                ) : (
+                  "Create"
+                )}
+              </Button>
+            </ModalBody>
+          </ModalContent>
+        </Modal>
       </Sidebar>
     </Box>
   );
