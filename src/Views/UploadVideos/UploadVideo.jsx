@@ -275,7 +275,7 @@ const UploadVideo = () => {
                 </Button>
               </Flex>
               <Flex
-                justifyContent={{ base: "center", md: "space-between" }}
+                justifyContent={{ base: "center", md: "left" }}
                 flexWrap={"wrap"}
                 gap={"15px"}
                 width={"100%"}
