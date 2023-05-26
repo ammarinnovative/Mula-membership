@@ -40,6 +40,7 @@ import { TailSpin } from "react-loader-spinner";
 import { useToast } from "@chakra-ui/react";
 import { GET, POST } from "../../utilities/ApiProvider";
 import { useParams } from "react-router-dom";
+import Item from "antd/es/list/Item";
 export default function SingleCourse() {
   const [user, setUser] = useState({});
   const selector = useSelector((state) => state);
@@ -101,7 +102,6 @@ export default function SingleCourse() {
     const items = fields.video.find((data) => {
       return data == item._id;
     });
-    console.log(items)
     if (items) {
       setFields({...fields,video:fields.video.filter((data)=>{return data !== item._id})});
     } else {
@@ -109,8 +109,6 @@ export default function SingleCourse() {
     }
   };
   
-  console.log(state);
-  console.log(fields)
 
   useEffect(()=>{
     setFields({...fields,course_id:params.id,video:[]});
@@ -163,6 +161,8 @@ export default function SingleCourse() {
   
 }
 
+
+console.log(fields.video);
   return (
     <Sidebar>
       <Flex
@@ -209,8 +209,10 @@ export default function SingleCourse() {
                       onClick={() => {
                         filter(item);
                       }}
-                      width={"200px"}
+                      borderRadius={"8px"}
                       objectFit={"cover"}
+                      padding={"5px"}
+                      border={fields.video.includes(item._id)?"3px solid blue":"none"}
                       height={"200px"}
                     >
                       <Box width={"200px"} height={"140px"} objectFit={"cover"}>
@@ -223,7 +225,7 @@ export default function SingleCourse() {
                         justifyContent={"space-between"}
                       >
                         <Text textTransform={"capitalize"} fontWeight={"bold"}>
-                          {item.title}
+                          {item.title} 
                         </Text>
                       </Stack>
                     </Box>
