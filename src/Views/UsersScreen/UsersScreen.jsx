@@ -2,12 +2,96 @@ import { extendTheme, ChakraProvider, Center, Checkbox, ButtonGroup, CheckboxGro
 import Sidebar from "../../Components/Sidebar/Sidebar"
 import BasicStatistics from "../../Components/Cards/Card";
 import Table from "../../Components/table/table";
-
-
+import {GET} from "../../utilities/ApiProvider";
+import { useState } from 'react';
+import { useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import Item from 'antd/es/list/Item';
 
 export const UserScreen = () => {
 
+const selecor = useSelector(state=>state);
 
+    const [data,setData] = useState([]);
+    const [user,settUser]= useState({});
+    const [fields,setFields] = useState([
+        {
+        Summry:{},
+        },
+        {
+            totalMembers:[],
+        },
+        {
+            courseMembers:[{}],
+        },
+        {
+            Subscribers:[{}],
+        },
+        {
+            BlockedMembers:[{}]
+        }
+        
+]);
+
+
+
+
+
+
+
+
+    const getUser = async ()=>{
+        const res = await GET("dashboard/user",{
+            authorization:`bearer ${user?.JWT_TOKEN}`
+        });
+        setFields([
+        {
+            Summry:res.data[0].Summry,
+        },
+        {
+            Subscribers:res.data[0].Subscribers
+        },
+        {
+            totalMembers:res.data[0].totalMembers
+        },
+        {
+            BlockedMembers:res.data[0].BlockedMembers
+        }
+    ]);
+        // setFields([{
+        //     Summry:res.data[0].Summry,
+        //     courseMembers:res.data[0].courseMembers,
+        //     Subscribers:res.data[0].Subscribers,
+        //     BlockedMembers:res.data[0].BlockedMembers
+        // }]);
+    }
+
+
+    console.log([...new Set(fields.map((item)=>{return item}))]);
+
+
+    useEffect(()=>{
+        if(selecor){
+            settUser(selecor?.user?.user?.data?.data);
+        }
+    },[selecor]);
+
+    for (const obj of data) {
+        const keys = Object.keys(obj); // Getting the keys of the object
+        if (keys.length > 0) {
+          const firstKey = keys[0]; // Accessing the first key
+          const firstValue = obj[firstKey]; // Accessing the value corresponding to the first key
+      
+          console.log(firstKey, firstValue);
+        }
+      }
+
+
+    useEffect(()=>{
+        if(user){
+            getUser();
+        }
+    },[user])
     const UserAct = [
         {
             title: "Total Members",
@@ -49,6 +133,8 @@ export const UserScreen = () => {
     ]
 
 
+
+
     return (
         <Sidebar>
             <Box paddingLeft={"16px"}>
@@ -61,11 +147,11 @@ export const UserScreen = () => {
                 <Text fontFamily={"poppins"} textAlign={{base:"center",md:"left",lg:"left"}} fontSize={"25px"} fontWeight={"900"}>Members Activities</Text>
                 <Text fontSize={"20px"} color={"gray.700"} textAlign={{base:"center",md:"left",lg:"left"}} fontFamily={"poppins"} >Manage total users,courses tears and their progress</Text>
                 <Flex mt={"20px"} gap="10px"  flexWrap={"wrap"} width={{base:"100%",md:"100%",lg:"100%"}} justifyContent={"space-between"}>
-                    {buttonData.map((data) => {
+                    {/* {arrBtn.map((data) => {
                         return (
-                            <Button _hover={{backgroundColor:"#2c339e"}} width={{base:"100%",md:"40%",lg:"30%",'xl':"23%"}} color={"white"} marginBottom={"20px"} backgroundColor={"#2c339e"}>{data.btn}</Button>
+                            <Button onClick={()=>{btnData(data)}}  _hover={{backgroundColor:"#2c339e"}} width={{base:"100%",md:"40%",lg:"30%",'xl':"23%"}} color={"white"} marginBottom={"20px"} backgroundColor={"#2c339e"}>{data}</Button>
                         )
-                    })}
+                    })} */}
                 </Flex>
                 <Table />
             </Box>
