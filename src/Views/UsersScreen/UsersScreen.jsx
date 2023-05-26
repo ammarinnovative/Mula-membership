@@ -33,31 +33,15 @@ const selecor = useSelector(state=>state);
         
 ]);
 
-
-
-
-
-
-
-
-    const getUser = async ()=>{
+const getUser = async ()=>{
         const res = await GET("dashboard/user",{
             authorization:`bearer ${user?.JWT_TOKEN}`
         });
-        setFields([
+        setFields(
         {
-            Summry:res.data[0].Summry,
-        },
-        {
-            Subscribers:res.data[0].Subscribers
-        },
-        {
-            totalMembers:res.data[0].totalMembers
-        },
-        {
-            BlockedMembers:res.data[0].BlockedMembers
+            summary : [],
         }
-    ]);
+        );
         // setFields([{
         //     Summry:res.data[0].Summry,
         //     courseMembers:res.data[0].courseMembers,
