@@ -32,11 +32,13 @@ import {
   ModalBody,
   ModalCloseButton,
 } from '@chakra-ui/react'
+import { Card } from "antd";
 
 
 
 export const UserScreen = () => {
-  const { isOpen, onOpen, onClose } = useDisclosure()
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [cardData,setCardData] = useState("");
   const selecor = useSelector((state) => state);
   const [data, setData] = useState([]);
   const [user, settUser] = useState({});
@@ -58,12 +60,13 @@ export const UserScreen = () => {
     },
   ]);
 
+
   const getUser = async () => {
     const res = await GET("dashboard/user", {
       authorization: `bearer ${user?.JWT_TOKEN}`,
     });
     setFields([
-      { Summry: res.data[0].Summry },
+      { Summry: res.data[0].summary},
       {
         totalMembers: res.data[0].totalMembers,
         courseMembers: res.data[0].courseMembers,
@@ -71,9 +74,14 @@ export const UserScreen = () => {
         BlockedMembers: res.data[0].BlockedMembers,
       },
     ]);
+    setCardData(res.data[0].summary);
   };
 
-  // console.log(fields)
+
+  
+
+
+
 
   useEffect(() => {
     if (selecor) {
@@ -92,28 +100,6 @@ export const UserScreen = () => {
       getUser();
     }
   }, [user]);
-  const UserAct = [
-    {
-      title: "Total Members",
-      total: "4,214",
-      id: 1,
-    },
-    {
-      title: "Total Course Member",
-      total: "523",
-      id: 2,
-    },
-    {
-      title: "Total Subscripber Member",
-      total: "110",
-      id: 3,
-    },
-    {
-      title: "Total Revenue",
-      total: "$24,251.00",
-      id: 4,
-    },
-  ];
 
     const btnData = (data) => {
       setSelected(data);
@@ -127,11 +113,8 @@ export const UserScreen = () => {
       number:_number,
       id:_id
     })
-    console.log(details);
     onOpen();
   }
-
-
   
 
   return (
@@ -169,7 +152,7 @@ export const UserScreen = () => {
         </Text>
       </Box>
       <Box>
-        <BasicStatistics UserAct={UserAct} />
+        <BasicStatistics  UserAct={cardData} />
       </Box>
       <Box padding={"16px"}>
         <Text
