@@ -79,6 +79,17 @@ export const Setting = () => {
 
   const UpdateData = async () => {
     setState(true);
+    if(!feields.name || !feields.password || !feields.confirmPassword){
+      toast({
+        position:"bottom-left",
+        status:"error",
+        duration:5000,
+        description:"Please fill all the fields",
+        isClosable:true
+      });
+      return;
+      setState(false);
+    }
     if (feields.password.length !== 0 || feields.confirmPassword !== 0) {
       if (feields.password !== feields.confirmPassword) {
         toast({
@@ -97,6 +108,9 @@ export const Setting = () => {
 
     if (feields.name.length == 0) {
       delete data?.name;
+    }
+    if(feields.password.length ==0){
+      delete data?.password;
     }
 
     const res = await PUT(`users/update/${selectedUser?._id}`, data, {
