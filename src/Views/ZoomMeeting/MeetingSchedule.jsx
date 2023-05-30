@@ -202,7 +202,7 @@ const MeetingSchedule = () => {
               Next Zoom Meeting
             </Text>
             <Text textAlign={{ base: "center", md: "center", lg: "left" }}>
-              4 available meeting on saturday
+             {meetingData.length} available meeting 
             </Text>
             <Box marginTop={"30px"}>
               {meetingData &&
