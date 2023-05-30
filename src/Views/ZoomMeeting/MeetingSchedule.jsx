@@ -31,12 +31,15 @@ import { imageURL } from "../../utilities/config";
 import { useEffect } from "react";
 import { TailSpin } from "react-loader-spinner";
 import { GET, POST, PUT } from "../../utilities/ApiProvider";
+import { json } from "react-router-dom";
 const MeetingSchedule = () => {
   const selector = useSelector((state) => state);
   const [date, setDate] = useState(new Date());
   const [user, setUser] = useState({});
   const [meetingData, setMeetingData] = useState([]);
   const [loading,setLoading] = useState(false);
+  const [time,setTime] = useState("3:40");
+  const [minutes, seconds] = time.split(":");
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [categeroy,setCategory] = useState([]);
   const [cancelledData, setCancelledData] = useState([]);
@@ -52,11 +55,15 @@ const MeetingSchedule = () => {
 
   const toast = useToast();
 
-
   const createMeeting = async ()=>{
     setLoading(true);
-    const jsonObj = JSON.stringify(fields)
-    const res = await POST("dashboard/meetings",jsonObj,{
+    const totalseconds = parseInt(minutes)*60 + parseInt(seconds);
+    setFields({...fields,time:totalseconds.toString()});
+    // console.log(fields);
+    // const jsonObj = JSON.stringify(fields);
+    // console.log(jsonObj);
+    debugger;
+    const res = await POST("dashboard/meetings",fields,{
       authorization: `bearer ${user?.JWT_TOKEN}`
     });
     console.log(res);
@@ -184,9 +191,7 @@ const MeetingSchedule = () => {
             />
             <Input
               type="time"
-              onChange={(e) => {
-                setFields({ ...fields, time: e.target.value });
-              }}
+              onChange={(e) => {setTime(e.target.value)}}
               m={"5px 0"}
             />
             <Select onChange={(e)=>{getItem(e.target.value)}} placeholder="Select Membership" m={"5px 0"}>
