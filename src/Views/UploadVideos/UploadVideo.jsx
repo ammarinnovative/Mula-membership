@@ -289,12 +289,17 @@ const UploadVideo = () => {
                       padding={"10px"}
                       width={{ base: "80%", md: "40%", lg: "30%" }}
                     >
+                      <Box width={"100%"}>
                       <Image
                         src={imageURL + data.thumbnail}
                         width={"100%"}
+                        objectFit={"cover"}
+                        height={"160px"}
+                        rounded={"8px"}
                         marginTop={"50px"}
                         alt={"Image"}
                       />
+                      </Box>
                       <Text
                         fontWeight={"600"}
                         fontFamily={"Poppins700"}

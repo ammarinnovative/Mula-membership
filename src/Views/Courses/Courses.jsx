@@ -37,11 +37,13 @@ import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { TailSpin } from "react-loader-spinner";
 import { imageURL } from "../../utilities/config";
+import ContentLoader from "react-content-loader";
 import { GET, POST } from "../../utilities/ApiProvider";
 export const Courses = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [user, setUser] = useState();
   const [category, setCategory] = useState([]);
+  const [isToggle, setToggle] = useState(true);
   const [loading, setLoading] = useState(false);
   const [course, setCourses] = useState([]);
   const [fields, setFields] = useState({
@@ -116,106 +118,129 @@ export const Courses = () => {
   };
 
   const getCourseVideos = async () => {
+    setToggle(true);
     const res = await GET("course?limit=6&page=1", {
       authorization: `bearer ${user?.JWT_TOKEN}`,
     });
     setCourses(res.data);
+    setToggle(false);
   };
 
   return (
     <Box>
       <Sidebar>
         <Box>
-          <Flex
-            justifyContent={"space-between"}
-            margin={"20px 0"}
-            flexDirection={{ base: "column", md: "column", lg: "row" }}
-            alignItems={"center"}
-          >
-            <Text
-              fontSize={{ base: "30px", md: "22px" }}
-              fontFamily={"AvenirLT"}
-              fontWeight={"bold"}
+          {isToggle ? (
+            <Box
+              display={"flex"}
+              justifyContent={"center"}
+              height={"70vh"}
+              alignItems={"center"}
             >
-              {course.length} Crypto courses
-            </Text>
-            <Button
-              color={"#000000"}
-              outline={"none"}
-              fontSize={"16px"}
-              width={{ base: "100%", md: "100%", lg: "35%" }}
-              size="md"
-              border={"1px solid #000000"}
-              backgroundColor={"#ffffff"}
-              onClick={onOpen}
-            >
-              Create New Courses
-            </Button>
-          </Flex>
-          <Flex
-            justifyContent={{ base: "center", md: "left" }}
-            flexWrap={"wrap"}
-            gap={"40px"}
-            width={"100%"}
-          >
-            {course &&
-              course?.map((item) => {
-                return (
-                    <Box
-                      cursor={"pointer"}
-                      width={{ base: "80%", md: "40%", lg: "30%" }}
-                      alignSelf={"normal"}
-                      objectFit={"cover"}
-                    >
-                    <Link to={`/dashboard/CourseDetails/${item._id}`}>
-                      <Box height={"200px"}>
-                        <Image
-                          src={imageURL + item.coursePic}
-                          width={"100%"}
-                          borderRadius={"7px"}
-                          height={"100%"}
-                          marginTop={"50px"}
-                          alt={"Image"}
-                        />
-                      </Box>
-                      <Text
-                        fontWeight={"600"}
-                        fontFamily={"Poppins700"}
-                        marginTop={"5px"}
-                        fontSize={"20px"}
+              <TailSpin
+                height="80"
+                width="80"
+                color="blue"
+                ariaLabel="tail-spin-loading"
+                radius="1"
+                wrapperStyle={{}}
+                wrapperClass=""
+                visible={true}
+              />
+            </Box>
+          ) : (
+            <>
+              <Flex
+                justifyContent={"space-between"}
+                margin={"20px 0"}
+                flexDirection={{ base: "column", md: "column", lg: "row" }}
+                alignItems={"center"}
+              >
+                <Text
+                  fontSize={{ base: "30px", md: "22px" }}
+                  fontFamily={"AvenirLT"}
+                  fontWeight={"bold"}
+                >
+                  {course.length} Crypto courses
+                </Text>
+                <Button
+                  color={"#000000"}
+                  outline={"none"}
+                  fontSize={"16px"}
+                  width={{ base: "100%", md: "100%", lg: "35%" }}
+                  size="md"
+                  border={"1px solid #000000"}
+                  backgroundColor={"#ffffff"}
+                  onClick={onOpen}
+                >
+                  Create New Courses
+                </Button>
+              </Flex>
+              <Flex
+                justifyContent={{ base: "center", md: "left" }}
+                flexWrap={"wrap"}
+                gap={"40px"}
+                width={"100%"}
+              >
+                {course &&
+                  course?.map((item) => {
+                    return (
+                      <Box
+                        cursor={"pointer"}
+                        width={{ base: "80%", md: "40%", lg: "30%" }}
+                        alignSelf={"normal"}
+                        objectFit={"cover"}
                       >
-                        {item?.name}
-                      </Text>
-                      <Box marginTop={"15px"}>
-                        <Box
-                          display={"flex"}
-                          fontSize={"20px"}
-                          color={"gray.600"}
-                          fontFamily={"Poppins400"}
-                          justifyContent={"space-between"}
-                          alignItems={"center"}
-                        >
-                          <Text>Category</Text>
-                          <Text>Videos</Text>
-                        </Box>
-                        <Box
-                          display={"flex"}
-                          fontSize={"20px"}
-                          color={"blue"}
-                          fontFamily={"Poppins400"}
-                          justifyContent={"space-between"}
-                          alignItems={"center"}
-                        >
-                          <Text>Price</Text>
-                          <Text>{item.price}</Text>
-                        </Box>
+                        <Link to={`/dashboard/CourseDetails/${item._id}`}>
+                          <Box height={"200px"}>
+                            <Image
+                              src={imageURL + item.coursePic}
+                              width={"100%"}
+                              borderRadius={"7px"}
+                              height={"100%"}
+                              marginTop={"50px"}
+                              alt={"Image"}
+                            />
+                          </Box>
+                          <Text
+                            fontWeight={"600"}
+                            fontFamily={"Poppins700"}
+                            marginTop={"5px"}
+                            fontSize={"20px"}
+                          >
+                            {item?.name}
+                          </Text>
+                          <Box marginTop={"15px"}>
+                            <Box
+                              display={"flex"}
+                              fontSize={"20px"}
+                              color={"gray.600"}
+                              fontFamily={"Poppins400"}
+                              justifyContent={"space-between"}
+                              alignItems={"center"}
+                            >
+                              <Text>Category</Text>
+                              <Text>Videos</Text>
+                            </Box>
+                            <Box
+                              display={"flex"}
+                              fontSize={"20px"}
+                              color={"blue"}
+                              fontFamily={"Poppins400"}
+                              justifyContent={"space-between"}
+                              alignItems={"center"}
+                            >
+                              <Text>Price</Text>
+                              <Text>{item.price}</Text>
+                            </Box>
+                          </Box>
+                        </Link>
                       </Box>
-                      </Link>
-
-                    </Box>
-                );
-              })}
-          </Flex>
+                    );
+                  })}
+              </Flex>
+            </>
+          )}
         </Box>
         <Modal isOpen={isOpen} size={"xl"} onClose={onClose}>
           <ModalOverlay />

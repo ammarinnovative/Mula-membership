@@ -30,7 +30,7 @@ export default function Table({name,number,profile,id,onOpen,btnItems}) {
                     <Box borderBottom={"2px solid #000"}></Box>
 
                 </Box>
-                <Box width={"80%"} marginLeft={"45px"} marginTop={"30px"} border={"1px solid gray"}></Box>
+                <Box width={"80%"}   marginLeft={"45px"} marginTop={"30px"} border={"1px solid gray"}></Box>
             </Box>
         </Box>
     );

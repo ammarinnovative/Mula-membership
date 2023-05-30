@@ -226,19 +226,7 @@ const MobileNav = ({ onOpen, tarLoc, ...rest }) => {
       </Text>
 
       <HStack spacing={{ base: "0", md: "6" }}>
-        <InputGroup>
-          <InputLeftElement
-            pointerEvents="none"
-            children={<SearchIcon color="gray.300" />}
-          />
-          <Input placeholder="Search something" />
-        </InputGroup>
-        <IconButton
-          size="lg"
-          variant="ghost"
-          aria-label="open menu"
-          icon={<FiBell />}
-        />
+        
         <Flex alignItems={"center"}>
           <Menu>
             <MenuButton
@@ -273,8 +261,7 @@ const MobileNav = ({ onOpen, tarLoc, ...rest }) => {
               borderColor={useColorModeValue("gray.200", "gray.700")}
             >
               <MenuItem>Profile</MenuItem>
-              <MenuItem>Settings</MenuItem>
-              <MenuItem>Billing</MenuItem>
+             <Link as={ReactLink} to="/dashboard/Setting"><MenuItem>Settings</MenuItem></Link>
               <MenuDivider />
 
               <MenuItem onClick={() => clearItem()}>Sign out</MenuItem>

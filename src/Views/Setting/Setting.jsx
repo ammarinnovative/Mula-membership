@@ -87,8 +87,8 @@ export const Setting = () => {
         description:"Please fill all the fields",
         isClosable:true
       });
-      return;
       setState(false);
+      return;
     }
     if (feields.password.length !== 0 || feields.confirmPassword !== 0) {
       if (feields.password !== feields.confirmPassword) {
