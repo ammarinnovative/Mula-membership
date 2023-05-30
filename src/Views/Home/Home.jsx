@@ -9,6 +9,7 @@ import ReactApexChart from "react-apexcharts";
 import BasicStatistics from "../../Components/Cards/Card";
 import { AiOutlineArrowLeft } from 'react-icons/ai';
 import { CgAdd } from 'react-icons/cg';
+import {GET} from "../../utilities/ApiProvider.js";
 import {
     Modal,
     ModalOverlay,
@@ -30,12 +31,18 @@ export const Home = () => {
 
     const navigate = useNavigate();
     const selector = useSelector(store => store);
+    const [user,setUser] = useState();
 
     useEffect(() => {
-        if(selector?.user?.user === null){
+        if(user === null){
             navigate('/login')
         }
-    }, [selector])
+    }, [selector]);
+
+    const [datas,setDatas]= useState({
+        summary:[],
+        recenetCourses:[]
+    });
 
     const [data, setData] = useState(
         [
@@ -82,7 +89,27 @@ export const Home = () => {
     ]
 
 
+    useEffect(()=>{
+        if(selector){
+            setUser(selector?.user?.user?.data?.data);
+        }
+    },[selector])
 
+
+    useEffect(()=>{
+        if(user){
+            getdetails();
+        }
+    },[user]);
+
+    const getdetails = async()=>{
+        const res = await GET("dashboard",{
+            authorization: `bearer ${user?.JWT_TOKEN}`
+        });
+        setDatas({...datas,summary:res.data[0].summary,recenetCourses:res.data[0].recentCourses});
+    }
+
+    console.log(datas.summary)
     const [CharData, setChartData] = [{
 
         series: [{
@@ -192,7 +219,6 @@ export const Home = () => {
                 <Box gap={"20px"} display={{ lg: "flex" }} flexDirection={{ base: "column", md: "column", lg: "row" }} width={"100%"}>
                     <Box width={{ base: "100%", md: "50%" }} flex={"1"}>
                         <Text fontSize={{ base: "25px", md: "30px" }} textAlign={{ base: "center", md: "center", lg: "left" }} fontWeight={"600"}>Manage Your Courses</Text>
-                        <Text textAlign={{ base: "center", md: "cneter", lg: "left" }}>Upload your courses to click on the plus icon</Text>
                     </Box>
                     {/* <Box width={"100%"} flex={"1"}>
                         <Box cursor={"pointer"} display={"flex"} onClick={onOpen} width={"100%"} justifyContent={"center"} alignItems={"center"} height={"20vh"} border={"2px  dashed black"}>
@@ -201,7 +227,7 @@ export const Home = () => {
                     </Box> */}
                     <Box marginTop={"20px"} flex={"3"} width={"100%"} fontWeight={"bold"} fontSize={"20px"}>
                         <Text>Recent Courses</Text>
-                        <Detais data={data} />
+                        <Detais data={datas.recenetCourses} />
                     </Box>
                 </Box>
                 <Box display={"flex"} flexDirection={{ base: "column", md: "column", lg: "row" }} marginTop={"60px"}>
@@ -231,7 +257,7 @@ export const Home = () => {
                 </Box>
                 <Box display={"flex"} flexDirection={{ base: "column", md: "column", lg: "column", xl: "row" }} alignItems={'center'}>
                     <Box flex={2} width={"100%"}>
-                        <BasicStatistics width={"100%"} UserAct={UserAct} />
+                        <BasicStatistics width={"100%"} UserAct={datas.summary} />
                     </Box>
                     <Box display={"flex"} marginTop={{ base: "40px" }} flexDirection={"column"} flex={1}   >
                         <Text fontWeight={"700"} fontSize={"23px"}>User Activities</Text>
@@ -245,7 +271,7 @@ export const Home = () => {
                                     <Avatar name='Christian Nwamba' src='https://bit.ly/code-beast' />
                                 </AvatarGroup>
                             </Box>
-                            <Button fontWeight={"700"} marginTop={{ base: "30px" }} backgroundColor={"white"} marginLeft={"20px"} border={"1px solid black"}>View All Activities</Button>
+                            <Link to={"/dashboard/user"}><Button fontWeight={"700"} marginTop={{ base: "30px" }} backgroundColor={"white"} marginLeft={"20px"} border={"1px solid black"}>View All Activities</Button></Link>
                         </Flex>
                     </Box>
                 </Box>

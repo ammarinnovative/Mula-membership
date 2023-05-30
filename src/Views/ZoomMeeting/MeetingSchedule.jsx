@@ -29,12 +29,14 @@ import {
 } from "@chakra-ui/react";
 import { imageURL } from "../../utilities/config";
 import { useEffect } from "react";
-import { GET, PUT } from "../../utilities/ApiProvider";
+import { TailSpin } from "react-loader-spinner";
+import { GET, POST, PUT } from "../../utilities/ApiProvider";
 const MeetingSchedule = () => {
   const selector = useSelector((state) => state);
   const [date, setDate] = useState(new Date());
   const [user, setUser] = useState({});
   const [meetingData, setMeetingData] = useState([]);
+  const [loading,setLoading] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [categeroy,setCategory] = useState([]);
   const [cancelledData, setCancelledData] = useState([]);
@@ -50,6 +52,37 @@ const MeetingSchedule = () => {
 
   const toast = useToast();
 
+
+  const createMeeting = async ()=>{
+    setLoading(true);
+    const jsonObj = JSON.stringify(fields)
+    const res = await POST("dashboard/meetings",jsonObj,{
+      authorization: `bearer ${user?.JWT_TOKEN}`
+    });
+    console.log(res);
+    if(res.status==200){
+      toast({
+        position:"bottom-left",
+        isClosable:true,
+        duration:5000,
+        status:"success",
+        description:"Meeting schedule successfully"
+      });
+      setLoading(false);
+    }
+    else{
+      toast({
+        position:"bottom-left",
+        isClosable:true,
+        duration:5000,
+        status:"error",
+        description:res.data.message
+      });
+     
+    }
+    setLoading(false);
+  }
+
   const getMeeting = async () => {
     const res = await GET("dashboard/meetings", {
       authorization: `bearer ${user?.JWT_TOKEN}`,
@@ -62,16 +95,15 @@ const MeetingSchedule = () => {
     setFields({...fields,membership:find._id});
     setCatData(find.subscriptions);
   }
+
   
-  console.log(fields);
+  
   const getCategory = async ()=>{
-    const res = await GET("membership?limit=20&page=1",{
+    const res = await GET("membership/users",{
       authorization:` bearer ${user?.JWT_TOKEN}`
     });
-    
     setCategory(res.data);
   }
-
 
   const CancelMeeting = async (id) => {
     const res = await PUT(`dashboard/meetings/${id}`);
@@ -166,8 +198,14 @@ const MeetingSchedule = () => {
                 })
               }
             </Select>
-            <Select placeholder="Select User Id" m={"5px 0"}>
-              <option>option1</option>
+            <Select onChange={(e)=>{setFields({...fields,participant:e.target.value})}} placeholder="Select User Id" m={"5px 0"}>
+              {
+                catData && catData?.map((data)=>{
+                  return(
+                    <option value={data?.user?._id}>{data?.user?.full_name}</option>
+                  )
+                })
+              }
             </Select>
             <Button
               width={"100%"}
@@ -175,8 +213,19 @@ const MeetingSchedule = () => {
               _hover={"none"}
               backgroundColor={"#1e2598"}
               color={"white"}
+              onClick={createMeeting}
+              
             >
-              Create Meeting
+              {
+                loading?<TailSpin
+                width="30"
+                color="white"
+                ariaLabel="tail-spin-loading"
+                radius="1"
+                visible={true}
+              />:" Create Meeting"
+              }
+             
             </Button>
           </ModalBody>
         </ModalContent>
@@ -202,7 +251,7 @@ const MeetingSchedule = () => {
               Next Zoom Meeting
             </Text>
             <Text textAlign={{ base: "center", md: "center", lg: "left" }}>
-             {meetingData.length} available meeting 
+             {meetingData?.length} available meeting 
             </Text>
             <Box marginTop={"30px"}>
               {meetingData &&
@@ -216,14 +265,14 @@ const MeetingSchedule = () => {
                       >
                         <WrapItem>
                           <Avatar
-                            name={data.participant.full_name}
+                            name={data?.participant?.full_name}
                             border={"1px solid gray"}
-                            src={imageURL + data.participant.profilePic}
+                            src={imageURL + data?.participant?.profilePic}
                           />
                           <Box>
                             <Text color={"gray.700"}>Name</Text>
                             <Text fontWeight={"bold"} fontSize={"13px"}>
-                              {data.participant.full_name}
+                              {data?.participant?.full_name}
                             </Text>
                           </Box>
                         </WrapItem>
@@ -299,12 +348,12 @@ const MeetingSchedule = () => {
                         <Wrap>
                           <WrapItem display={"flex"} alignItems="center">
                             <Avatar
-                              name={item.participant.full_name}
+                              name={item?.participant?.full_name}
                               size={"md"}
-                              src={imageURL+item.participant.profilePic}
+                              src={imageURL+item?.participant?.profilePic}
                             />
                             <Text fontWeight={"600"} marginLeft={"5px"}>
-                              {item.participant.full_name}
+                              {item?.participant?.full_name}
                             </Text>
                           </WrapItem>
                         </Wrap>

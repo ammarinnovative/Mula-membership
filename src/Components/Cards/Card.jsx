@@ -60,7 +60,6 @@ const Details = [
 }
 
 export default function BasicStatistics({ UserAct}) {
-  
   return (
     <Box maxW="7xl" mx={'auto'} pt={5} px={{ base: 2, sm: 12, md: 17 }}>
       <SimpleGrid columns={{ base: 1, md: 2,lg:2 }} spacing={{ base: 5, lg: 8 }}>
@@ -71,7 +70,7 @@ export default function BasicStatistics({ UserAct}) {
                 key={index}
                 title={data.title}
                 stat={data.numbers}
-                // view={data.view}
+                view={data.view}
                 
               />
             )
