@@ -46,6 +46,10 @@ import {
   ModalCloseButton,
 } from "@chakra-ui/react";
 import userEvent from "@testing-library/user-event";
+import io from 'socket.io-client'
+import { socketUrl } from "../../utilities/config";
+var socket;
+
 export default function ChatsScreen() {
   const [data, setData] = useState([
     {
@@ -166,7 +170,7 @@ export default function ChatsScreen() {
     // const Data = new Object(fields);
     // const jsonData = JSON.stringify(Data);
     // console.log(jsonData);
-    const res = await POST("announcement",fields,{
+    const res = await POST("announcement", fields, {
       authorization: `bearer ${user?.JWT_TOKEN}`,
     });
     if (res.status == 200) {
@@ -204,6 +208,49 @@ export default function ChatsScreen() {
   useEffect(() => {
     console.log(fields);
   }, [fields]);
+
+  // ! SOCKET IMPLEMENTATIONS
+  
+  // ! The code is throwing run time error on line 239 over socket.on may need to handle it. 
+
+  // State to check if socket connected successfully!
+  const [socketConnected, setSocketConnected] = useState(false);
+
+  // To establish connection of socket if socket is not connected and after connection is
+  // created emitting chatMessage to get the array of the message behalf of the reciever's ID.
+
+  useEffect(() => {
+    if (!socketConnected) {
+      socket = io(socketUrl);
+      socket.on('connected', () => {
+        console.log('Socket connected successfully!');
+        setSocketConnected(true);
+      });
+      socket.emit('chatMessages', {
+        senderId: "646daa261ddfb8edf8e8aaaf",
+        receiverId: "646f08905d9a442875f38ffc"
+      });
+    }
+  }, []);
+
+  // A listener which listens upon chatMessages and bring updated array of the message
+  useEffect(() => {
+    if (socketConnected) {
+      socket.on('chatMessages', (messageList) => {
+        console.log('message list from socket server', messageList)
+        // TODO: set this {messageList} in your state and run a map on it to show messages
+      });
+    }
+  }, [socketConnected])
+
+  // TODO: call below function on send button but before that make senderID and message value dynamic
+  const sendMessage = () => {
+    socket.emit('message', {
+      senderId: "646daa261ddfb8edf8e8aaaf",
+      receiverId: "646f08905d9a442875f38ffc",
+      message: 'Hard coded message!'
+    });
+  }
 
   return (
     <Sidebar>
@@ -297,7 +344,7 @@ export default function ChatsScreen() {
                 Select Category:
               </Text>
               <CheckboxGroup
-              value={fields.categories}
+                value={fields.categories}
                 onChange={(e) => {
                   setFields({ ...fields, categories: e });
                 }}
