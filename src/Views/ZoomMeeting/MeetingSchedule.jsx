@@ -87,6 +87,7 @@ const MeetingSchedule = () => {
       });
      
     }
+    getMeeting();
     setLoading(false);
   }
 
