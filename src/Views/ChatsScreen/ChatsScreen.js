@@ -210,7 +210,7 @@ export default function ChatsScreen() {
   }, [fields]);
 
   // ! SOCKET IMPLEMENTATIONS
-  
+
   // ! The code is throwing run time error on line 239 over socket.on may need to handle it. 
 
   // State to check if socket connected successfully!
@@ -221,22 +221,23 @@ export default function ChatsScreen() {
 
   useEffect(() => {
     if (!socketConnected) {
-      socket = io(socketUrl);
+      socket = io("143.198.160.137:5405");
+      socket.connect();
       socket.on('connected', () => {
         console.log('Socket connected successfully!');
         setSocketConnected(true);
       });
-      socket.emit('chatMessages', {
-        senderId: "646daa261ddfb8edf8e8aaaf",
-        receiverId: "646f08905d9a442875f38ffc"
-      });
     }
+    socket?.emit('chatMessages', {
+      senderId: "646daa261ddfb8edf8e8aaaf",
+      receiverId: "646f08905d9a442875f38ffc"
+    });
   }, []);
 
   // A listener which listens upon chatMessages and bring updated array of the message
   useEffect(() => {
     if (socketConnected) {
-      socket.on('chatMessages', (messageList) => {
+      socket?.on('chatMessages', (messageList) => {
         console.log('message list from socket server', messageList)
         // TODO: set this {messageList} in your state and run a map on it to show messages
       });
