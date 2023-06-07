@@ -14,6 +14,9 @@ import UploadMember from "../Views/UploadMembership/UploadMembership";
 import UploadVideo from '../Views/UploadVideos/UploadVideo';
 import ChatRoom from '../Views/ChatRoom/ChatRoom';
 import  Subscriber  from '../Components/Subscribers/Subcribers';
+import Payout from "../Views/Payout/Payout";
+import PayoutHistory from '../Components/PayoutHistory/PayoutHistory';
+
 
 export const Router = ()=>{
     return(
@@ -34,6 +37,8 @@ export const Router = ()=>{
             <Route path="/dashboard/UploadVideo" element={<UploadVideo />}/>
             <Route path="/dashboard/ChatRoom" element={<ChatRoom />}/>
             <Route path="/dashboard/subscribers/:id" element={<Subscriber />}/>
+            <Route path='/dashboard/Payout' element={<Payout />} />
+            <Route path='/dashboard/PayoutHistory' element={<PayoutHistory />} />
         </Routes>
     </Main>
 </Box>

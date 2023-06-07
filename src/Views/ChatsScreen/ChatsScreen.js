@@ -46,7 +46,7 @@ import {
   ModalCloseButton,
 } from "@chakra-ui/react";
 import userEvent from "@testing-library/user-event";
-import io from 'socket.io-client'
+import io from "socket.io-client";
 import { socketUrl } from "../../utilities/config";
 var socket;
 
@@ -167,9 +167,7 @@ export default function ChatsScreen() {
       setLoading(false);
       return;
     }
-    // const Data = new Object(fields);
-    // const jsonData = JSON.stringify(Data);
-    // console.log(jsonData);
+
     const res = await POST("announcement", fields, {
       authorization: `bearer ${user?.JWT_TOKEN}`,
     });
@@ -205,13 +203,9 @@ export default function ChatsScreen() {
     setLoading(false);
   };
 
-  useEffect(() => {
-    console.log(fields);
-  }, [fields]);
-
   // ! SOCKET IMPLEMENTATIONS
-  
-  // ! The code is throwing run time error on line 239 over socket.on may need to handle it. 
+
+  // ! The code is throwing run time error on line 239 over socket.on may need to handle it.
 
   // State to check if socket connected successfully!
   const [socketConnected, setSocketConnected] = useState(false);
@@ -222,13 +216,13 @@ export default function ChatsScreen() {
   useEffect(() => {
     if (!socketConnected) {
       socket = io(socketUrl);
-      socket.on('connected', () => {
-        console.log('Socket connected successfully!');
+      socket.on("connected", () => {
+        console.log("Socket connected successfully!");
         setSocketConnected(true);
       });
-      socket.emit('chatMessages', {
+      socket.emit("chatMessages", {
         senderId: "646daa261ddfb8edf8e8aaaf",
-        receiverId: "646f08905d9a442875f38ffc"
+        receiverId: "646f08905d9a442875f38ffc",
       });
     }
   }, []);
@@ -236,21 +230,23 @@ export default function ChatsScreen() {
   // A listener which listens upon chatMessages and bring updated array of the message
   useEffect(() => {
     if (socketConnected) {
-      socket.on('chatMessages', (messageList) => {
-        console.log('message list from socket server', messageList)
+      socket.on("chatMessages", (messageList) => {
+        console.log("message list from socket server", messageList);
         // TODO: set this {messageList} in your state and run a map on it to show messages
       });
     }
-  }, [socketConnected])
+  }, [socketConnected]);
 
   // TODO: call below function on send button but before that make senderID and message value dynamic
   const sendMessage = () => {
-    socket.emit('message', {
+    socket.emit("message", {
       senderId: "646daa261ddfb8edf8e8aaaf",
       receiverId: "646f08905d9a442875f38ffc",
-      message: 'Hard coded message!'
+      message: "Hard coded message!",
     });
-  }
+  };
+
+  console.log(membership);
 
   return (
     <Sidebar>
@@ -325,10 +321,10 @@ export default function ChatsScreen() {
               >
                 <Stack direction={["column"]} spacing={[1, 5]}>
                   {membership &&
-                    membership.map((item) => {
+                    membership?.map((item) => {
                       return (
-                        <Checkbox size={"md"} value={item._id}>
-                          {item.name}
+                        <Checkbox size={"md"} value={item?._id}>
+                          {item?.name}
                         </Checkbox>
                       );
                     })}
@@ -351,14 +347,14 @@ export default function ChatsScreen() {
               >
                 <Stack direction={["column"]} mb={"20px"} spacing={5}>
                   {category &&
-                    category.map((item) => {
+                    category?.map((item) => {
                       return (
                         <Checkbox
-                          value={item._id}
+                          value={item?._id}
                           colorScheme="blue"
                           size={"md"}
                         >
-                          {item.course_category_name}
+                          {item?.course_category_name}
                         </Checkbox>
                       );
                     })}

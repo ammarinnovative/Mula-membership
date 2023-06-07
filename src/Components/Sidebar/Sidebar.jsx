@@ -42,6 +42,7 @@ import {
   FiChevronDown,
 } from "react-icons/fi";
 import { IconType } from "react-icons";
+import { MdOutlinePayment } from 'react-icons/md';
 import { ReactText } from "react";
 import {
   BsWallet,
@@ -63,6 +64,7 @@ const LinkItems = [
   { name: "Settings", icon: FiSettings, url: "/dashboard/Setting" },
   {name: "Upload Videos",icon: BsFillCloudUploadFill,url: "/dashboard/UploadVideo",},
   {name: "Create Chats",icon: RiWechatPayLine,url: "/dashboard/ChatRoom",},
+  {name: "Payout",icon: MdOutlinePayment,url: "/dashboard/Payout",},
 ];
 
 export default function SidebarWithHeader({ children }) {

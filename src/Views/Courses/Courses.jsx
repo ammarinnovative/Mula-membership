@@ -76,6 +76,8 @@ export const Courses = () => {
     const res = await GET("courseCategory/getAllCourseCategoryList", {
       authorization: `bearer ${user?.JWT_TOKEN}`,
     });
+    console.log(res);
+    debugger;
     setCategory(res?.data);
   };
 
