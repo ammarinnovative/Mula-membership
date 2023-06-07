@@ -138,6 +138,7 @@ export default function ChatsScreen() {
 
   useEffect(() => {
     if (selector) {
+      console.log(selector?.user?.user?.data?.data);
       setUser(selector?.user?.user?.data?.data);
     }
   }, [selector]);
@@ -205,42 +206,44 @@ export default function ChatsScreen() {
 
   // ! SOCKET IMPLEMENTATIONS
 
-  // ! The code is throwing run time error on line 239 over socket.on may need to handle it.
-
   // State to check if socket connected successfully!
   const [socketConnected, setSocketConnected] = useState(false);
+  const [messageList, setMessageList] = useState([]);
 
   // To establish connection of socket if socket is not connected and after connection is
   // created emitting chatMessage to get the array of the message behalf of the reciever's ID.
 
   useEffect(() => {
-    if (!socketConnected) {
-      socket = io(socketUrl);
-      socket.on("connected", () => {
-        console.log("Socket connected successfully!");
-        setSocketConnected(true);
-      });
-      socket.emit("chatMessages", {
-        senderId: "646daa261ddfb8edf8e8aaaf",
-        receiverId: "646f08905d9a442875f38ffc",
+    if (user) {
+      if (!socketConnected) {
+        socket = io("143.198.160.137:5405");
+        socket.connect();
+        socket.on('connected', () => {
+          console.log('Socket connected successfully!');
+          setSocketConnected(true);
+        });
+      }
+      socket?.emit('chatMessages', {
+        senderId: user?._id,
+        receiverId: "646f08905d9a442875f38ffc"
       });
     }
-  }, []);
+  }, [user]);
 
   // A listener which listens upon chatMessages and bring updated array of the message
   useEffect(() => {
     if (socketConnected) {
-      socket.on("chatMessages", (messageList) => {
-        console.log("message list from socket server", messageList);
-        // TODO: set this {messageList} in your state and run a map on it to show messages
+      socket?.on('chatMessages', (messageList) => {
+        console.log('message list from socket server', messageList)
+        setMessageList(messageList);
       });
     }
   }, [socketConnected]);
 
   // TODO: call below function on send button but before that make senderID and message value dynamic
   const sendMessage = () => {
-    socket.emit("message", {
-      senderId: "646daa261ddfb8edf8e8aaaf",
+    socket.emit('message', {
+      senderId: user?._id,
       receiverId: "646f08905d9a442875f38ffc",
       message: "Hard coded message!",
     });
@@ -323,8 +326,8 @@ export default function ChatsScreen() {
                   {membership &&
                     membership?.map((item) => {
                       return (
-                        <Checkbox size={"md"} value={item?._id}>
-                          {item?.name}
+                        <Checkbox size={"md"} key={item?._id} value={item._id}>
+                          {item.name}
                         </Checkbox>
                       );
                     })}
@@ -353,6 +356,7 @@ export default function ChatsScreen() {
                           value={item?._id}
                           colorScheme="blue"
                           size={"md"}
+                          key={item?._id}
                         >
                           {item?.course_category_name}
                         </Checkbox>
@@ -452,133 +456,55 @@ export default function ChatsScreen() {
                   mb={{ base: "50px", sm: "", md: "0px", lg: "", "2xl": "" }}
                   overflow={"auto"}
                 >
-                  <Box
-                    padding={{
-                      base: "0",
-                      sm: "",
-                      md: " 30px",
-                      lg: "",
-                      "2xl": "",
-                    }}
-                  >
-                    <Stack
-                      spacing={{
-                        base: "0",
-                        sm: "",
-                        md: "6",
-                        lg: "",
-                        "2xl": "",
-                      }}
-                      direction="row"
-                      alignItems={"center"}
-                      paddingBottom={"20px"}
-                    >
-                      <Image
-                        width={{
-                          base: "15%",
-                          sm: "8%",
-                          md: "3%",
+                  {
+                    messageList.length &&
+                    messageList?.map(data =>
+                      <Box
+                        key={data?._id}
+                        padding={{
+                          base: "0",
+                          sm: "",
+                          md: " 30px",
                           lg: "",
                           "2xl": "",
                         }}
-                        src={Avatar4}
-                      ></Image>
-                      <Text
-                        fontSize={"md"}
-                        bg={"#b2b2b2"}
-                        color={"#000000"}
-                        borderRadius={"12px 12px 12px 0px"}
-                        padding={"10px 20px"}
                       >
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                      </Text>
-                    </Stack>
-                  </Box>
+                        <Stack
+                          spacing={{
+                            base: "0",
+                            sm: "",
+                            md: "6",
+                            lg: "",
+                            "2xl": "",
+                          }}
+                          direction={user?._id === data?.senderId ? 'row-reverse' : 'row'}
+                          alignItems={"center"}
+                          paddingBottom={"20px"}
+                        >
+                          <Image
+                            width={{
+                              base: "15%",
+                              sm: "8%",
+                              md: "3%",
+                              lg: "",
+                              "2xl": "",
+                            }}
+                            src={Avatar4}
+                          ></Image>
+                          <Text
+                            fontSize={"md"}
+                            bg={user?._id === data?.senderId ? "#1e2597" : "#b2b2b2"}
+                            color={user?._id === data?.senderId ? "#fff" : "#000"}
+                            borderRadius={"12px 12px 12px 0px"}
+                            padding={"10px 20px"}
+                          >
+                            {data?.message ?? 'Waiting for this message to arrive...'}
+                          </Text>
+                        </Stack>
+                      </Box>
+                    )
+                  }
 
-                  <Box
-                    padding={{
-                      base: "0",
-                      sm: "",
-                      md: " 30px",
-                      lg: "",
-                      "2xl": "",
-                    }}
-                  >
-                    <Stack
-                      spacing={{
-                        base: "0",
-                        sm: "",
-                        md: "6",
-                        lg: "",
-                        "2xl": "",
-                      }}
-                      direction="row"
-                      alignItems={"center"}
-                      paddingBottom={"20px"}
-                    >
-                      <Image
-                        width={{
-                          base: "15%",
-                          sm: "8%",
-                          md: "3%",
-                          lg: "",
-                          "2xl": "",
-                        }}
-                        src={Avatar4}
-                      ></Image>
-                      <Text
-                        fontSize={"md"}
-                        bg={"#b2b2b2"}
-                        color={"#000000"}
-                        borderRadius={"12px 12px 12px 0px"}
-                        padding={"10px 20px"}
-                      >
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                      </Text>
-                    </Stack>
-                  </Box>
-                  <Box
-                    padding={{
-                      base: "0",
-                      sm: "",
-                      md: " 30px",
-                      lg: "",
-                      "2xl": "",
-                    }}
-                  >
-                    <Stack
-                      spacing={{
-                        base: "0",
-                        sm: "",
-                        md: "6",
-                        lg: "",
-                        "2xl": "",
-                      }}
-                      direction="row"
-                      alignItems={"center"}
-                      paddingBottom={"20px"}
-                    >
-                      <Image
-                        width={{
-                          base: "15%",
-                          sm: "8%",
-                          md: "3%",
-                          lg: "",
-                          "2xl": "",
-                        }}
-                        src={Avatar4}
-                      ></Image>
-                      <Text
-                        fontSize={"md"}
-                        bg={"#b2b2b2"}
-                        color={"#000000"}
-                        borderRadius={"12px 12px 12px 0px"}
-                        padding={"10px 20px"}
-                      >
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                      </Text>
-                    </Stack>
-                  </Box>
                 </Box>
               </TabPanel>
 
