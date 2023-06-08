@@ -215,6 +215,7 @@ export default function ChatsScreen() {
   // State to check if socket connected successfully!
   const [socketConnected, setSocketConnected] = useState(false);
   const [messageList, setMessageList] = useState([]);
+  const [messageField, setMessageField] = useState('');
 
   // To establish connection of socket if socket is not connected and after connection is
   // created emitting chatMessage to get the array of the message behalf of the reciever's ID.
@@ -240,19 +241,26 @@ export default function ChatsScreen() {
   useEffect(() => {
     if (socketConnected) {
       socket?.on('chatMessages', (messageList) => {
-        console.log('message list from socket server', messageList)
-        setMessageList(messageList);
+        console.log('message list from socket server', messageList);
+        console.log(typeof messageList);
+        if (messageList?.message) {
+          setMessageList((prev) => [...prev, messageList]);
+        } else {
+          setMessageList((prev) => [...prev, ...messageList]);
+        }
       });
     }
   }, [socketConnected])
 
-  // TODO: call below function on send button but before that make senderID and message value dynamic
   const sendMessage = () => {
-    socket.emit('message', {
-      senderId: user?._id,
-      receiverId: "646f08905d9a442875f38ffc",
-      message: 'Hard coded message!'
-    });
+    if (messageField !== '') {
+      console.log(messageField);
+      socket?.emit('message', {
+        senderId: user?._id,
+        receiverId: "646f08905d9a442875f38ffc",
+        message: messageField
+      });
+    }
   }
 
   return (
@@ -468,7 +476,7 @@ export default function ChatsScreen() {
                         padding={{
                           base: "0",
                           sm: "",
-                          md: " 30px",
+                          md: "10px",
                           lg: "",
                           "2xl": "",
                         }}
@@ -499,7 +507,7 @@ export default function ChatsScreen() {
                             fontSize={"md"}
                             bg={user?._id === data?.senderId ? "#1e2597" : "#b2b2b2"}
                             color={user?._id === data?.senderId ? "#fff" : "#000"}
-                            borderRadius={"12px 12px 12px 0px"}
+                            borderRadius={user?._id === data?.senderId ? "12px 12px 0px 12px" : "12px 12px 12px 0px"}
                             padding={"10px 20px"}
                           >
                             {data?.message ?? 'Waiting for this message to arrive...'}
@@ -1210,8 +1218,11 @@ export default function ChatsScreen() {
               placeholder=" Enter your message"
               _placeholder={{ color: "#000" }}
               _focusVisible={{ border: "none" }}
+              value={messageField}
+              onChange={e => setMessageField(e.target.value)}
             />
             <Button
+              onClick={sendMessage}
               padding={{
                 base: "25px 20px",
                 sm: "",
