@@ -101,9 +101,8 @@ const Payout = () => {
           wrapperClass=""
           visible={true}
         />
-      </Box>:
-      data.length==0?<Text fontSize={"25px"} width={"100%"} display={"flex"} alignItems={"center"} justifyContent={"center"} height={"60vh"} fontWeight={"semibold"}>No Request Found</Text>: 
-      
+      </Box> 
+      :
       data &&
         data?.map((item) => {
           return (

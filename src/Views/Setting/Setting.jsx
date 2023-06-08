@@ -79,7 +79,7 @@ export const Setting = () => {
 
   const UpdateData = async () => {
     setState(true);
-    if(!feields.name || !feields.password || !feields.confirmPassword){
+    if(!feields.name && !feields.password && !feields.confirmPassword){
       toast({
         position:"bottom-left",
         status:"error",
@@ -99,10 +99,12 @@ export const Setting = () => {
           position: "bottom-left",
           status: "error",
         });
-        return;
         setState(false);
+        return;
       }
     }
+
+    console.log(feields);
     let data = new Object(feields);
     delete data?.confirmPassword;
 
@@ -113,6 +115,7 @@ export const Setting = () => {
       delete data?.password;
     }
 
+   
     const res = await PUT(`users/update/${selectedUser?._id}`, data, {
       authorization: `bearer ${selectedUser?.JWT_TOKEN}`,
     });
@@ -125,6 +128,12 @@ export const Setting = () => {
         duration: 5000,
         isClosable: true,
       });
+      setFields({
+        ...feields,
+        password: "",
+        confirmPassword: "",
+      });
+      setState(false);
     } else {
       toast({
         position: "bottom-left",

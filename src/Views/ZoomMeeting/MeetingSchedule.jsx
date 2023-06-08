@@ -30,20 +30,21 @@ import {
 import { imageURL } from "../../utilities/config";
 import { useEffect } from "react";
 import { TailSpin } from "react-loader-spinner";
-import { GET, POST, PUT } from "../../utilities/ApiProvider";
+import { DELETE, GET, POST, PUT } from "../../utilities/ApiProvider";
 import { json } from "react-router-dom";
 const MeetingSchedule = () => {
   const selector = useSelector((state) => state);
   const [date, setDate] = useState(new Date());
   const [user, setUser] = useState({});
   const [meetingData, setMeetingData] = useState([]);
-  const [loading,setLoading] = useState(false);
-  const [time,setTime] = useState("3:40");
+  const [loading, setLoading] = useState(false);
+  const [toggle, setToggle] = useState(false);
+  const [time, setTime] = useState("");
   const [minutes, seconds] = time.split(":");
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [categeroy,setCategory] = useState([]);
+  const [categeroy, setCategory] = useState([]);
   const [cancelledData, setCancelledData] = useState([]);
-  const [catData,setCatData] = useState([]);
+  const [catData, setCatData] = useState([]);
   const [fields, setFields] = useState({
     name: "",
     link: "",
@@ -55,41 +56,56 @@ const MeetingSchedule = () => {
 
   const toast = useToast();
 
-  const createMeeting = async ()=>{
+  const createMeeting = async () => {
+    console.log(time)
+    if (
+      !fields.name ||
+      !fields.link ||
+      !fields.Date ||
+      !time ||
+      !fields.membership ||
+      !fields.participant
+    ) {
+      toast({
+        position: "bottom-left",
+        isClosable: true,
+        duration: 5000,
+        status: "error",
+        description: "Please fill all the fields",
+      });
+      return;
+    }
     setLoading(true);
-    const totalseconds = parseInt(minutes)*60 + parseInt(seconds);
-    setFields({...fields,time:totalseconds.toString()});
-    // console.log(fields);
+    const totalseconds = parseInt(minutes) * 60 + parseInt(seconds);
+    setFields({ ...fields, time: totalseconds.toString() });
+    console.log(fields);
     // const jsonObj = JSON.stringify(fields);
     // console.log(jsonObj);
-    debugger;
-    const res = await POST("dashboard/meetings",fields,{
-      authorization: `bearer ${user?.JWT_TOKEN}`
+    const res = await POST("dashboard/meetings", fields, {
+      authorization: `bearer ${user?.JWT_TOKEN}`,
     });
     console.log(res);
-    if(res.status==200){
+    if (res.status == 200) {
       toast({
-        position:"bottom-left",
-        isClosable:true,
-        duration:5000,
-        status:"success",
-        description:"Meeting schedule successfully"
+        position: "bottom-left",
+        isClosable: true,
+        duration: 5000,
+        status: "success",
+        description: "Meeting schedule successfully",
       });
       setLoading(false);
-    }
-    else{
+    } else {
       toast({
-        position:"bottom-left",
-        isClosable:true,
-        duration:5000,
-        status:"error",
-        description:res.data.message
+        position: "bottom-left",
+        isClosable: true,
+        duration: 5000,
+        status: "error",
+        description: res.data.message,
       });
-     
     }
     getMeeting();
     setLoading(false);
-  }
+  };
 
   const getMeeting = async () => {
     const res = await GET("dashboard/meetings", {
@@ -98,20 +114,18 @@ const MeetingSchedule = () => {
     setMeetingData(res.data);
   };
 
-  const getItem = (items)=>{
-    const find = categeroy.find((data)=>data.name ===items);
-    setFields({...fields,membership:find._id});
+  const getItem = (items) => {
+    const find = categeroy.find((data) => data.name === items);
+    setFields({ ...fields, membership: find._id });
     setCatData(find.subscriptions);
-  }
+  };
 
-  
-  
-  const getCategory = async ()=>{
-    const res = await GET("membership/users",{
-      authorization:` bearer ${user?.JWT_TOKEN}`
+  const getCategory = async () => {
+    const res = await GET("membership/users", {
+      authorization: ` bearer ${user?.JWT_TOKEN}`,
     });
     setCategory(res.data);
-  }
+  };
 
   const CancelMeeting = async (id) => {
     const res = await PUT(`dashboard/meetings/${id}`);
@@ -125,7 +139,6 @@ const MeetingSchedule = () => {
       });
       getMeeting();
       cancellUser();
-      
     } else {
       toast({
         position: "bottom-left",
@@ -158,8 +171,44 @@ const MeetingSchedule = () => {
     }
   }, [user]);
 
+  const deleteMeeting = async (id) => {
+    setToggle(true);
+    try {
+      const res = await DELETE(`dashboard/delete/${id}`, {
+        authorization: `bearer ${user?.JWT_TOKEN}`,
+      });
+      if (res.status == 200) {
+        toast({
+          position: "bottom-left",
+          isClosable: true,
+          duration: 5000,
+          status: "success",
+          description: res.data.message,
+        });
+        setToggle(false);
+      } else {
+        toast({
+          position: "bottom-left",
+          isClosable: true,
+          duration: 5000,
+          status: "error",
+          description: "",
+        });
+        setToggle(false);
+      }
+    } catch (error) {
+      toast({
+        position: "bottom-left",
+        isClosable: true,
+        duration: 5000,
+        status: "error",
+        description: "",
+      });
+    }
+    setToggle(false);
+    cancellUser();
+  };
 
-  
   return (
     <Sidebar>
       <Modal size={"xl"} isOpen={isOpen} onClose={onClose}>
@@ -192,26 +241,38 @@ const MeetingSchedule = () => {
             />
             <Input
               type="time"
-              onChange={(e) => {setTime(e.target.value)}}
+              onChange={(e) => {
+                setTime(e.target.value);
+              }}
               m={"5px 0"}
             />
-            <Select onChange={(e)=>{getItem(e.target.value)}} placeholder="Select Membership" m={"5px 0"}>
-              {
-                categeroy && categeroy?.map((item)=>{
-                  return(
-                    <option>{item.name}</option>
-                  )
-                })
-              }
+            <Select
+              onChange={(e) => {
+                getItem(e.target.value);
+              }}
+              placeholder="Select Membership"
+              m={"5px 0"}
+            >
+              {categeroy &&
+                categeroy?.map((item) => {
+                  return <option>{item.name}</option>;
+                })}
             </Select>
-            <Select onChange={(e)=>{setFields({...fields,participant:e.target.value})}} placeholder="Select User Id" m={"5px 0"}>
-              {
-                catData && catData?.map((data)=>{
-                  return(
-                    <option value={data?.user?._id}>{data?.user?.full_name}</option>
-                  )
-                })
-              }
+            <Select
+              onChange={(e) => {
+                setFields({ ...fields, participant: e.target.value });
+              }}
+              placeholder="Select User Id"
+              m={"5px 0"}
+            >
+              {catData &&
+                catData?.map((data) => {
+                  return (
+                    <option value={data?.user?._id}>
+                      {data?.user?.full_name}
+                    </option>
+                  );
+                })}
             </Select>
             <Button
               width={"100%"}
@@ -220,18 +281,18 @@ const MeetingSchedule = () => {
               backgroundColor={"#1e2598"}
               color={"white"}
               onClick={createMeeting}
-              
             >
-              {
-                loading?<TailSpin
-                width="30"
-                color="white"
-                ariaLabel="tail-spin-loading"
-                radius="1"
-                visible={true}
-              />:" Create Meeting"
-              }
-             
+              {loading ? (
+                <TailSpin
+                  width="30"
+                  color="white"
+                  ariaLabel="tail-spin-loading"
+                  radius="1"
+                  visible={true}
+                />
+              ) : (
+                " Create Meeting"
+              )}
             </Button>
           </ModalBody>
         </ModalContent>
@@ -257,7 +318,7 @@ const MeetingSchedule = () => {
               Next Zoom Meeting
             </Text>
             <Text textAlign={{ base: "center", md: "center", lg: "left" }}>
-             {meetingData?.length} available meeting 
+              {meetingData?.length} available meeting
             </Text>
             <Box marginTop={"30px"}>
               {meetingData &&
@@ -307,7 +368,7 @@ const MeetingSchedule = () => {
                       </Flex>
                       <Box
                         width={"80%"}
-                        _last={{border:0}}
+                        _last={{ border: 0 }}
                         marginLeft={"45px"}
                         marginTop={"30px"}
                         border={"1px solid gray"}
@@ -356,7 +417,7 @@ const MeetingSchedule = () => {
                             <Avatar
                               name={item?.participant?.full_name}
                               size={"md"}
-                              src={imageURL+item?.participant?.profilePic}
+                              src={imageURL + item?.participant?.profilePic}
                             />
                             <Text fontWeight={"600"} marginLeft={"5px"}>
                               {item?.participant?.full_name}
@@ -369,15 +430,36 @@ const MeetingSchedule = () => {
                         <Box fontWeight={"600"}>15Feb,2023</Box>
                       </Box>
                     </Box>
-                    <Text
-                      color={"red"}
-                      marginBottom={"10px"}
-                      marginTop="15px"
-                      fontFamily="poppins"
+                    <Box
+                      display={"flex"}
+                      justifyContent={"space-between"}
+                      alignItems={"center"}
                     >
-                      This meeting has been deleted
-                    </Text>
-                    <Box _last={{border:0}} borderBottom={"1px solid gray"} marginTop="20px"></Box>
+                      <Text
+                        color={"red"}
+                        marginBottom={"10px"}
+                        marginTop="15px"
+                        fontFamily="poppins"
+                      >
+                        This meeting has been deleted
+                      </Text>
+                      <Button
+                        backgroundColor={"#1e2598"}
+                        _hover={"none"}
+                        onClick={() => {
+                          deleteMeeting(item._id);
+                        }}
+                        color={"white"}
+                        size={"sm"}
+                      >
+                        Delete
+                      </Button>
+                    </Box>
+                    <Box
+                      _last={{ border: 0 }}
+                      borderBottom={"1px solid gray"}
+                      marginTop="20px"
+                    ></Box>
                   </>
                 );
               })}
