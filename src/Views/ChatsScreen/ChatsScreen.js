@@ -46,7 +46,7 @@ import {
   ModalCloseButton,
 } from "@chakra-ui/react";
 import userEvent from "@testing-library/user-event";
-import io from 'socket.io-client'
+import io from "socket.io-client";
 import { socketUrl } from "../../utilities/config";
 var socket;
 
@@ -168,9 +168,7 @@ export default function ChatsScreen() {
       setLoading(false);
       return;
     }
-    // const Data = new Object(fields);
-    // const jsonData = JSON.stringify(Data);
-    // console.log(jsonData);
+
     const res = await POST("announcement", fields, {
       authorization: `bearer ${user?.JWT_TOKEN}`,
     });
@@ -205,10 +203,6 @@ export default function ChatsScreen() {
     }
     setLoading(false);
   };
-
-  useEffect(() => {
-    console.log(fields);
-  }, [fields]);
 
   // ! SOCKET IMPLEMENTATIONS
 
@@ -250,7 +244,7 @@ export default function ChatsScreen() {
         }
       });
     }
-  }, [socketConnected])
+  }, [socketConnected]);
 
   const sendMessage = () => {
     if (messageField !== '') {
@@ -336,7 +330,7 @@ export default function ChatsScreen() {
               >
                 <Stack direction={["column"]} spacing={[1, 5]}>
                   {membership &&
-                    membership.map((item) => {
+                    membership?.map((item) => {
                       return (
                         <Checkbox size={"md"} key={item?._id} value={item._id}>
                           {item.name}
@@ -362,15 +356,15 @@ export default function ChatsScreen() {
               >
                 <Stack direction={["column"]} mb={"20px"} spacing={5}>
                   {category &&
-                    category.map((item) => {
+                    category?.map((item) => {
                       return (
                         <Checkbox
-                          value={item._id}
+                          value={item?._id}
                           colorScheme="blue"
                           size={"md"}
                           key={item?._id}
                         >
-                          {item.course_category_name}
+                          {item?.course_category_name}
                         </Checkbox>
                       );
                     })}

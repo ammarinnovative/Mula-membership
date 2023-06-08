@@ -75,7 +75,7 @@ export const Home = () => {
         {
             title: "Total Courses",
             total: "45",
-            view: "View All",
+            view: "View meeting",
             id: 1
         },
         {
