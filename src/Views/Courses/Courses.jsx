@@ -159,9 +159,9 @@ export const Courses = () => {
                 alignItems={"center"}
               >
                 <Text
-                  fontSize={{ base: "30px", md: "22px" }}
+                  fontSize={{ base: "30px", md: "35px" }}
                   fontFamily={"AvenirLT"}
-                  fontWeight={"bold"}
+                  fontWeight={"800"}
                 >
                   {course.length} Crypto courses
                 </Text>

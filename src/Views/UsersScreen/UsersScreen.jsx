@@ -31,25 +31,23 @@ import {
   ModalFooter,
   ModalBody,
   ModalCloseButton,
-} from '@chakra-ui/react'
+} from "@chakra-ui/react";
 import { Card } from "antd";
-
-
 
 export const UserScreen = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [cardData,setCardData] = useState("");
+  const [cardData, setCardData] = useState("");
   const selecor = useSelector((state) => state);
+  const [selected, setSelected] = useState("totalMembers");
   const [data, setData] = useState([]);
   const [user, settUser] = useState({});
-  const [details,setDetails] = useState({
-    name:"",
-    phone:"",
-    id:""
+  const [details, setDetails] = useState({
+    name: "",
+    phone: "",
+    id: "",
   });
-  const [filterData,setFilterData] = useState();
-  const [selected,setSelected] = useState("");
-  const [btns,setBtns] = useState("");
+  const [filterData, setFilterData] = useState();
+  const [btns, setBtns] = useState("");
   const [fields, setFields] = useState([
     { Summry: {} },
     {
@@ -60,13 +58,12 @@ export const UserScreen = () => {
     },
   ]);
 
-
   const getUser = async () => {
     const res = await GET("dashboard/user", {
       authorization: `bearer ${user?.JWT_TOKEN}`,
     });
     setFields([
-      { Summry: res.data[0].summary},
+      { Summry: res.data[0].summary },
       {
         totalMembers: res.data[0].totalMembers,
         courseMembers: res.data[0].courseMembers,
@@ -76,12 +73,6 @@ export const UserScreen = () => {
     ]);
     setCardData(res.data[0].summary);
   };
-
-
-  
-
-
-
 
   useEffect(() => {
     if (selecor) {
@@ -101,43 +92,44 @@ export const UserScreen = () => {
     }
   }, [user]);
 
-    const btnData = (data) => {
-      setSelected(data);
+  useEffect(() => {
+    setFilterData(fields[1]["totalMembers"]);
+  }, [fields]);
+
+  const btnData = (data) => {
     setFilterData(fields[1][data]);
   };
 
-
-  const btnItems = (_name,_number,_id)=>{
+  const btnItems = (_name, _number, _id) => {
     setDetails({
-      name:_name,
-      number:_number,
-      id:_id
-    })
+      name: _name,
+      number: _number,
+      id: _id,
+    });
     onOpen();
-  }
-  
+  };
 
   return (
     <Sidebar>
-     <Modal  isOpen={isOpen} onClose={onClose}>
+      <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>User Details</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <Box display={"flex"} gap={"20px"} flexWrap={"wrap"}>
-            <Box width={"45%"}>
-              <Text fontWeight={"bold"}>Name:</Text>
-            <Text>{details.name}</Text>
-            </Box>
-            <Box width={"45%"}>
-              <Text fontWeight={"bold"}>Phone:</Text>
-            <Text>{details.number}</Text>
-            </Box>
-            <Box width={"100%"}>
-              <Text fontWeight={"bold"}>ID:</Text>
-            <Text>{details.id}</Text>
-            </Box>
+              <Box width={"45%"}>
+                <Text fontWeight={"bold"}>Name:</Text>
+                <Text>{details.name}</Text>
+              </Box>
+              <Box width={"45%"}>
+                <Text fontWeight={"bold"}>Phone:</Text>
+                <Text>{details.number}</Text>
+              </Box>
+              <Box width={"100%"}>
+                <Text fontWeight={"bold"}>ID:</Text>
+                <Text>{details.id}</Text>
+              </Box>
             </Box>
           </ModalBody>
         </ModalContent>
@@ -152,7 +144,7 @@ export const UserScreen = () => {
         </Text>
       </Box>
       <Box>
-        <BasicStatistics  UserAct={cardData} />
+        <BasicStatistics UserAct={cardData} />
       </Box>
       <Box padding={"16px"}>
         <Text
@@ -181,30 +173,44 @@ export const UserScreen = () => {
           {btn.map((data) => {
             return (
               <Button
-                onClick={()=>{btnData(data)}}
-                _hover={{ backgroundColor: "#2c339e",color:"white" }}
+                onClick={() => {
+                  btnData(data);
+                  setSelected(data);
+                }}
+                _hover={{ backgroundColor: "#2c339e", color: "white" }}
                 width={{ base: "100%", md: "40%", lg: "30%", xl: "23%" }}
-                color={data===selected?"white":"blue"}
+                color={data === selected ? "white" : "blue"}
                 border={"1px solid #1e2598"}
                 marginBottom={"20px"}
-                backgroundColor={data===selected?"#1e2598":"none"}
-                
+                backgroundColor={data === selected ? "#1e2598" : "none"}
               >
                 {data}
               </Button>
             );
           })}
         </Flex>
-        {
-          filterData && filterData?.map((data)=>{
-            return(
-              <Table onOpen={onOpen} btnItems={btnItems}  name={data?.full_name ?? ""} id={data._id} number={data?.phone_number ?? ""} profile={data?.profilePic ?? ""} />
-            )
+        {filterData?.length > 0 ? (
+          filterData &&
+          filterData?.map((data) => {
+            return (
+              <Table
+                onOpen={onOpen}
+                btnItems={btnItems}
+                name={data?.full_name ?? ""}
+                id={data._id}
+                number={data?.phone_number ?? ""}
+                profile={data?.profilePic ?? ""}
+              />
+            );
           })
-        }
+        ) : (
+          <Box width={"100%"} display={"flex"} alignItems={"center"} justifyContent={"center"} height={"50vh"}>
+          <Text textAlign={"center"}  fontSize={"20px"}>
+            No Data Found
+          </Text>
+          </Box>
+        )}
       </Box>
     </Sidebar>
   );
 };
-
-

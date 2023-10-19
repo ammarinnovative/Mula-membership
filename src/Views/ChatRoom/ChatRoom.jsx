@@ -5,6 +5,7 @@ import {
   Container,
   Stack,
   Toast,
+  Text,
   VStack,
   useToast,
 } from "@chakra-ui/react";
@@ -267,7 +268,7 @@ function ChatRoom() {
      visible={true}
    />
        </Box>:
-       <TableContainer>
+       chatData?.length>0?  <TableContainer>
        <Table variant="simple" boxShadow={"lg"} bg={"white"} mt={"40px"} mb={"40px"} borderRadius={"7px"} padding={"20px"} >
          <Thead>
            <Tr >
@@ -295,7 +296,10 @@ function ChatRoom() {
            
          </Tbody>
        </Table>
-     </TableContainer>
+     </TableContainer>:<Box width={"100%"} display={"flex"} justifyContent={"center"} alignItems={"center"} height={"50vh"}>
+     <Text fontSize={"18px"} fontWeight={"800"}>No records found</Text>
+     </Box>
+     
       }
       
     </Sidebar>

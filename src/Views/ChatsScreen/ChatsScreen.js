@@ -126,6 +126,7 @@ export default function ChatsScreen() {
   };
 
   const [membership, setMembership] = useState([]);
+  
   const getMembership = async () => {
     const res = await GET(`membership?limit=23&page=`, {
       authorization: `bearer ${user?.JWT_TOKEN}`,
@@ -209,42 +210,38 @@ export default function ChatsScreen() {
   // State to check if socket connected successfully!
   const [socketConnected, setSocketConnected] = useState(false);
   const [messageList, setMessageList] = useState([]);
+  const [socket, setSocket] = useState(null);
   const [messageField, setMessageField] = useState('');
+  const [userList,setUserList] = useState([]);
 
   // To establish connection of socket if socket is not connected and after connection is
   // created emitting chatMessage to get the array of the message behalf of the reciever's ID.
 
   useEffect(() => {
     if (user) {
-      if (!socketConnected) {
-        socket = io("143.198.160.137:5405");
-        socket.connect();
-        socket.on('connected', () => {
-          console.log('Socket connected successfully!');
-          setSocketConnected(true);
-        });
+      const newSocket = io(socketUrl);
+      setSocket(newSocket);
+
+      return ()=>{
+        newSocket.disconnect();
       }
-      socket?.emit('chatMessages', {
-        senderId: user?._id,
-        receiverId: "646f08905d9a442875f38ffc"
-      });
     }
   }, [user]);
 
   // A listener which listens upon chatMessages and bring updated array of the message
   useEffect(() => {
-    if (socketConnected) {
-      socket?.on('chatMessages', (messageList) => {
-        console.log('message list from socket server', messageList);
-        console.log(typeof messageList);
-        if (messageList?.message) {
-          setMessageList((prev) => [...prev, messageList]);
-        } else {
-          setMessageList((prev) => [...prev, ...messageList]);
-        }
-      });
+    if(socket == null){
+      return;
     }
-  }, [socketConnected]);
+    socket?.on("userList",(data)=>{
+    setUserList(data);
+    });
+
+    socket?.on("chatMessages",(data)=>{
+      setMessageList(data);
+    })
+
+  }, [socket]);
 
   const sendMessage = () => {
     if (messageField !== '') {

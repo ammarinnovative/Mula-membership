@@ -50,55 +50,61 @@ const PayoutHistory = () => {
       <Text fontSize={"27px"} textAlign={"center"} fontWeight={"semibold"}>
         Payout History
       </Text>
-      <Box mt={"50px"} backgroundColor={"white"}>
-        {
-            loading? <Box display={"grid"} height={"70vh"} placeItems={"center"}>
-            <TailSpin
-              height="80"
-              width="80"
-              color="blue"
-              ariaLabel="tail-spin-loading"
-              radius="1"
-              wrapperStyle={{}}
-              wrapperClass=""
-              visible={true}
-            />
-            </Box> :""
-        }
-        <TableContainer>
-          <Table variant="gray">
-            <Thead>
-              <Tr color={"gray.500"} backgroundColor={"gray.200"}>
-                <Th fontSize={"20px"} fontWeight={"semibold"}>
-                  User Id
-                </Th>
-                <Th fontWeight={"semibold"} fontSize={"20px"}>
-                  Name
-                </Th>
-                <Th fontWeight={"semibold"} fontSize={"20px"}>
-                  Amount
-                </Th>
-                <Th fontWeight={"semibold"} fontSize={"20px"}>
-                  Status
-                </Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              {data &&
-                data?.map((e) => {
-                  return (
-                    <Tr key={e._id}>
-                      <Td>{e.userId}</Td>
-                      <Td>{e.username}</Td>
-                      <Td>{e.amount}</Td>
-                      <Td>{e.status}</Td>
-                    </Tr>
-                  );
-                })}
-            </Tbody>
-          </Table>
-        </TableContainer>
-      </Box>
+      {data.length>0?
+         <Box mt={"50px"} backgroundColor={"white"}>
+         {
+             loading? <Box display={"grid"} height={"70vh"} placeItems={"center"}>
+             <TailSpin
+               height="80"
+               width="80"
+               color="blue"
+               ariaLabel="tail-spin-loading"
+               radius="1"
+               wrapperStyle={{}}
+               wrapperClass=""
+               visible={true}
+             />
+             </Box> :""
+         }
+         <TableContainer>
+           <Table variant="gray">
+             <Thead>
+               <Tr color={"gray.500"} backgroundColor={"gray.200"}>
+                 <Th fontSize={"20px"} fontWeight={"semibold"}>
+                   User Id
+                 </Th>
+                 <Th fontWeight={"semibold"} fontSize={"20px"}>
+                   Name
+                 </Th>
+                 <Th fontWeight={"semibold"} fontSize={"20px"}>
+                   Amount
+                 </Th>
+                 <Th fontWeight={"semibold"} fontSize={"20px"}>
+                   Status
+                 </Th>
+               </Tr>
+             </Thead>
+             <Tbody>
+               {data &&
+                 data?.map((e) => {
+                   return (
+                     <Tr key={e._id}>
+                       <Td>{e.userId}</Td>
+                       <Td>{e.username}</Td>
+                       <Td>{e.amount}</Td>
+                       <Td>{e.status}</Td>
+                     </Tr>
+                   );
+                 })}
+             </Tbody>
+           </Table>
+         </TableContainer>
+       </Box>:
+       <Box width={"100%"} height={"60vh"} display={"flex"} justifyContent={"center"} alignItems={"center"}>
+       <Text fontSize={"28px"} fontWeight={"800"}>No Data Found</Text>
+       </Box>
+      }
+     
     </Sidebar>
   );
 };

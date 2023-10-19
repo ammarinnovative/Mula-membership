@@ -33,7 +33,7 @@ import {
 } from "@chakra-ui/react";
 import { AiOutlineArrowLeft } from "react-icons/ai";
 import { GrAddCircle } from "react-icons/gr";
-import { Input } from "antd";
+import { Input } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import { GET } from "../../utilities/ApiProvider";
 import { useSelector } from "react-redux";
@@ -45,23 +45,26 @@ import Pagination from "../../Components/Pagination/Pagination";
 import { TailSpin } from "react-loader-spinner";
 import { Link } from "react-router-dom";
 export const Tiers = () => {
-
-  
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isOpens,
+    onOpen: onOpens,
+    onClose: onCloses,
+  } = useDisclosure();
   const [data, setData] = useState("");
   const [feature, setFeature] = useState([]);
   const [MembershipPlan, setMembershipPlan] = useState([]);
   const [catData, setCatData] = useState([]);
-  const [toggle,setToggle] = useState(false);
+  const [toggle, setToggle] = useState(false);
   const [loading, setLoading] = useState(false);
   const selector = useSelector((state) => state);
   const [user, setUser] = useState(null);
   const [pageCount, setPageCount] = useState(0);
   const [pageNumber, setPageNumber] = useState(1);
   const [stateLoad, setStateLoad] = useState(false);
-  const [page,setPage] = useState(1);
-  const [totalPage,setTotalPage]=useState(1);
-  const [totalRecords,setTotalRecords] = useState();
+  const [page, setPage] = useState(1);
+  const [totalPage, setTotalPage] = useState(1);
+  const [totalRecords, setTotalRecords] = useState();
   // const [loading,setLoading] = useState(false);
   // const [membershipData, setmembershipData] = useState([]);
 
@@ -77,15 +80,17 @@ export const Tiers = () => {
 
   const getMembershipPlan = async () => {
     setStateLoad(true);
-    const res = await GET(`membership?limit=3&page=${page}`, {
+    const res = await GET(`membership?limit=5&page=${page}`, {
       authorization: `bearer ${user?.JWT_TOKEN}`,
     });
     setMembershipPlan(res?.data);
     setTotalPage(res?.totalPages.page);
-    setTotalRecords(res?.totalPages.totalRecords)
+    setTotalRecords(res?.totalPages.totalRecords);
     setStateLoad(false);
   };
-  
+  const [cat, setCat] = useState({
+    course_category_name: "",
+  });
 
   useEffect(() => {
     if (selector) {
@@ -94,10 +99,10 @@ export const Tiers = () => {
   }, [selector]);
 
   useEffect(() => {
-    if(user){
+    if (user) {
       getMembershipPlan();
     }
-  }, [user,page]);
+  }, [user, page]);
 
   useEffect(() => {
     if (user) {
@@ -107,7 +112,7 @@ export const Tiers = () => {
   const [chatRoom, showChatRoom] = useState(false);
   const [fields, setFields] = useState({
     name: "",
-    price: 0,
+    price: null,
     membershipDetails: [],
     thumbnail: null,
     category: [],
@@ -117,8 +122,7 @@ export const Tiers = () => {
         zoomConferance: false,
         announcements: false,
         directMessage: false,
-        chatRoom:{}
-
+        chatRoom: {},
       },
     ],
   });
@@ -128,14 +132,12 @@ export const Tiers = () => {
     if (!chatRoom) setCheck("chatRoom", undefined);
   }, [chatRoom]);
 
-
   const Data = () => {
     setFeature([...feature, { text: data }]);
     setFields({ ...fields, membershipDetails: [...feature, { text: data }] });
     setData(" ");
   };
 
-  
   function setCheck(key, value) {
     let newAccessLevels = { ...fields.access_levels[0] };
     newAccessLevels[key] = value;
@@ -145,22 +147,24 @@ export const Tiers = () => {
 
   const toast = useToast();
 
-
-
-
   const postdata = async () => {
-    
-    if(!fields.name || !fields.price || !fields.thumbnail || !fields.category.length>0 || !fields.membershipDetails.length>0){
+    if (
+      !fields.name ||
+      !fields.price ||
+      !fields.thumbnail ||
+      !fields.category.length > 0 ||
+      !fields.membershipDetails.length > 0
+    ) {
       toast({
-        position:"bottom-left",
-        isClosable:true,
-        status:"error",
-        duration:5000,
-        description:"please fill all the fields"
+        position: "bottom-left",
+        isClosable: true,
+        status: "error",
+        duration: 5000,
+        description: "please fill all the fields",
       });
       return;
     }
-    
+
     setToggle(true);
     const object = {
       ...fields,
@@ -182,27 +186,74 @@ export const Tiers = () => {
       authorization: `bearer ${user?.JWT_TOKEN}`,
     });
     console.log(res);
-    if(res.status==200){
+    if (res.status == 200) {
       toast({
-        position:"bottom-left",
-        isClosable:true,
-        status:"success",
-        duration:5000,
-        description:res.data.message
-      })
+        position: "bottom-left",
+        isClosable: true,
+        status: "success",
+        duration: 5000,
+        description: res.data.message,
+      });
+      onClose();
       getMembershipPlan();
-    }
-    else{
+      window.location.reload();
+    } else {
       toast({
-        position:"bottom-left",
-        isClosable:true,
-        status:"error",
-        duration:5000,
-        description:res.data.message
-      })
+        position: "bottom-left",
+        isClosable: true,
+        status: "error",
+        duration: 5000,
+        description: res.data.message,
+      });
     }
     console.log(res);
     setToggle(false);
+  };
+
+  const createCategory = async () => {
+    if (!cat) {
+      toast({
+        position: "bottom-left",
+        isClosable: true,
+        status: "error",
+        duration: 5000,
+        description: "Please fill all the fields",
+      });
+      return;
+    }
+    try {
+      const res = await POST("courseCategory/addCourseCategoryDetail", cat, {
+        authorization: `bearer ${user?.JWT_TOKEN}`,
+      });
+      console.log(res);
+      if ((res.status = 200)) {
+        toast({
+          position: "bottom-left",
+          isClosable: true,
+          status: "success",
+          duration: 5000,
+          description: "Category created",
+        });
+        getData();
+        onCloses();
+      } else {
+        toast({
+          position: "bottom-left",
+          isClosable: true,
+          status: "error",
+          duration: 5000,
+          description: "Category created",
+        });
+      }
+    } catch (error) {
+      toast({
+        position: "bottom-left",
+        isClosable: true,
+        status: "error",
+        duration: 5000,
+        description: error?.message,
+      });
+    }
   };
 
   // const changePage = ({ selected }) => {
@@ -210,11 +261,9 @@ export const Tiers = () => {
   //   console.log(selected);
   // };
 
-
-  const getPage = (item)=>{
+  const getPage = (item) => {
     setPage(item);
-  }
-
+  };
 
   return (
     <Sidebar>
@@ -244,8 +293,8 @@ export const Tiers = () => {
               color={"white"}
               px={"30px"}
               bg={"#1e2598"}
-              onClick={postdata}
               _hover={"none"}
+              onClick={postdata}
             >
               Create
             </Button>
@@ -279,7 +328,7 @@ export const Tiers = () => {
                       setData(e.target.value);
                     }}
                     placeholder="Enter your Features"
-                    width={"70%"}
+                    width={"95%"}
                     value={data}
                     margin="5px 0"
                     name={"price"}
@@ -300,7 +349,7 @@ export const Tiers = () => {
                     </Button>
                   </Box>
                 </Box>
-                {feature?.length &&
+                {feature?.length && data.length > 0 ? (
                   feature.map((data) => {
                     return (
                       <Input
@@ -310,7 +359,10 @@ export const Tiers = () => {
                         type="text"
                       />
                     );
-                  })}
+                  })
+                ) : (
+                  <Text>No Data</Text>
+                )}
                 <Input
                   type="file"
                   margin="5px 0"
@@ -404,6 +456,49 @@ export const Tiers = () => {
           </ModalBody>
         </ModalContent>
       </Modal>
+      <Modal
+        size={"xl"}
+        closeOnOverlayClick={false}
+        isOpen={isOpens}
+        onClose={onCloses}
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <Box
+            display="flex"
+            justifyContent={"space-between"}
+            alignItems={"center"}
+          >
+            <ModalHeader display={"flex"} alignItems={"center"}>
+              <AiOutlineArrowLeft cursor={"pointer"} onClick={onCloses} />
+              <Text marginLeft={"10px"} width={"240px"}>
+                {" "}
+                Create Category
+              </Text>
+            </ModalHeader>
+          </Box>
+          <ModalBody pb={6}>
+            <Input
+              type="text"
+              margin="5px 0"
+              onChange={(e) => {
+                setCat({ course_category_name: e.target.value });
+              }}
+              placeholder="Create the category"
+            />
+            <Button
+              mr={"12px"}
+              color={"white"}
+              px={"30px"}
+              bg={"#1e2598"}
+              onClick={createCategory}
+              _hover={"none"}
+            >
+              Create
+            </Button>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
       <Flex
         justifyContent={"space-between"}
         gap="20px"
@@ -414,13 +509,24 @@ export const Tiers = () => {
         <Text fontSize={"25px"} fontWeight={"600"}>
           Current Tiers Plan
         </Text>
-        <Button
-          leftIcon={<SmallAddIcon boxSize={7} />}
-          border={"1px solid black"}
-          onClick={onOpen}
-        >
-          Cretae New Tiers
-        </Button>
+        <Stack direction={"row"}>
+          <Button
+            leftIcon={<SmallAddIcon boxSize={7} />}
+            border={"1px solid black"}
+            onClick={onOpen}
+          >
+            Create New Tiers
+          </Button>
+          <Button
+            color="white"
+            bg={"#1e2598"}
+            _hover={"none"}
+            border={"1px solid black"}
+            onClick={onOpens}
+          >
+            Create Category
+          </Button>
+        </Stack>
       </Flex>
       {stateLoad ? (
         <Box display={"grid"} height={"70vh"} placeItems={"center"}>
@@ -445,10 +551,9 @@ export const Tiers = () => {
             justifyContent={"center"}
             margin={"20px 5px 20px 5px"}
           >
-            {MembershipPlan?.length &&
+            {MembershipPlan?.length && MembershipPlan?.length > 0 ? (
               MembershipPlan?.map((item) => {
                 return (
-                  
                   <Box
                     backgroundColor={"#1e2598"}
                     margin={"20px 5px 20px 5px"}
@@ -463,64 +568,91 @@ export const Tiers = () => {
                       display={"flex"}
                       alignItems={"center"}
                       width={"100%"}
-                      flexDirection={{base:"column-reverse",md:"column-reverse",lg:"row"}}
+                      flexDirection={{
+                        base: "column-reverse",
+                        md: "column-reverse",
+                        lg: "row",
+                      }}
                       justifyContent={"space-between"}
                     >
-                      <Text >{item.name}</Text>
-                      <Box display={"flex"} width={"100%"} justifyContent={{base:"center",md:"center",lg:"right"}} flexDirection={{base:"column",md:"column",lg:"row"}}>
-                      <Button
-                        border={"1px solid #1e2598"}
-                        px={"30px"}
-                        color={"#1e2598"}
-                        width={{base:"100%",md:"100%",lg:"20%"}}
+                      <Text>{item.name}</Text>
+                      <Box
+                        display={"flex"}
+                        width={"100%"}
+                        justifyContent={{
+                          base: "center",
+                          md: "center",
+                          lg: "right",
+                        }}
+                        flexDirection={{
+                          base: "column",
+                          md: "column",
+                          lg: "row",
+                        }}
                       >
-                        Edit
-                      </Button>
-                      <Link to={`/dashboard/subscribers/${item._id}`}>
-                      <Button
-                        border={"1px solid #1e2598"}
-                        px={"10px"}
-                        width={{base:"100%",md:"100%"}}
-                        color={"#1e2598"}
-                      >
-                        Subscribers
-                      </Button>
-                      </Link>
+                        <Link to={`/dashboard/subscribers/${item._id}`}>
+                          <Button
+                            border={"1px solid #1e2598"}
+                            px={"10px"}
+                            width={{ base: "100%", md: "100%" }}
+                            color={"#1e2598"}
+                          >
+                            Subscribers
+                          </Button>
+                        </Link>
                       </Box>
                     </Box>
                     <Link to={`/dashboard/UploadMembershipVideos/${item._id}`}>
-                    <Flex marginTop={"15"} alignItems={"center"}>
-                      <Flex fontSize={"40px"} fontWeight={"bold"}>
-                        ${item.price}
+                      <Flex marginTop={"15"} alignItems={"center"}>
+                        <Flex fontSize={"40px"} fontWeight={"bold"}>
+                          ${item.price}
+                        </Flex>
+                        <Text marginTop={"18px"} marginLeft={"5px"}>
+                          per Month
+                        </Text>
                       </Flex>
-                      <Text marginTop={"18px"} marginLeft={"5px"}>
-                        per Month
-                      </Text>
-                    </Flex>
-                    <Box
-                      marginTop={"10px"}
-                      borderBottom={"1px solid #fff"}
-                    ></Box>
-                    <Flex
-                      color={"white"}
-                      padding={"20px 2px 30px 20px"}
-                      flexDirection={"column"}
-                    >
-                      <ul>
-                        {item?.membershipDetails.length &&
-                          item.membershipDetails?.map((feature) => {
-                            return <li key={feature._id}>{feature.text}</li>;
-                          })}
-                      </ul>
-                    </Flex>
-                  </Link>
+                      <Box
+                        marginTop={"10px"}
+                        borderBottom={"1px solid #fff"}
+                      ></Box>
+                      <Flex
+                        color={"white"}
+                        padding={"20px 2px 30px 20px"}
+                        flexDirection={"column"}
+                      >
+                        <ul>
+                          {item?.membershipDetails.length &&
+                            item.membershipDetails?.map((feature) => {
+                              return <li key={feature._id}>{feature.text}</li>;
+                            })}
+                        </ul>
+                      </Flex>
+                    </Link>
                   </Box>
                 );
-              })}
+              })
+            ) : (
+              <Box
+                display={"flex"}
+                height={"60vh"}
+                justifyContent={"center"}
+                alignItems={"center"}
+              >
+                <Text fontWeight={800} fontSize={"30px"}>
+                  No Data Found
+                </Text>
+              </Box>
+            )}
           </Box>
         </>
       )}
-      <Pagination getPage={getPage} totalRecords={totalRecords} totalPage={totalPage}/>
+      {MembershipPlan.length > 5 && (
+        <Pagination
+          getPage={getPage}
+          totalRecords={totalRecords}
+          totalPage={totalPage}
+        />
+      )}
     </Sidebar>
   );
 };
